@@ -1,0 +1,489 @@
+openapi: 3.0.3
+info:
+  title: WasaPhoto
+  description: |-
+    WasaPhoto is a social network where users can upload their pictures and follow friends to see their pictures and interact with them.
+  version: 1.0.0
+  
+servers: 
+  # Added by API Auto Mocking Plugin
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/Spazio-D/WasaPhoto/1.0.0
+  - url: "http://localhost:3000"
+
+
+
+#Da sistemare: Aggiungere varie response, altri path, aggregare quel che si puo nelle components, aggiungere tags
+
+paths:
+  #LOGIN
+  /session:
+    post:
+      tags: ["login"]
+      summary: Logs in the user
+      description: |-
+        If the user does not exist, it will be created,
+        and an identifier is returned.
+        If the user exists, the user identifier is returned.
+      operationId: doLogin
+      requestBody:
+        description: User details
+        content:
+          application/json:
+            schema:
+              description: The username of the user that wants to login
+              type: object
+              properties:
+                name: #ref username quando sarà nei components
+                  type: string
+                  example: Maria
+                  pattern: 'ˆ.*?$'
+                  minLength: 3
+                  maxLength: 16
+        required: true
+      responses: #aggiungere responses
+        '201':
+          description: User log-in action successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  identifier:
+                  # change here if you decide to use an integer
+                  # or any other type of identifier
+                    type: string
+                    example: "abcdef012345"
+  #SET USERNAME
+  /users/{user_id}/username:
+    parameters:
+      - name: user_id
+        in: path
+        description: The user id
+        schema: { $ref: "#/components/schemas/UserID" }
+        required: true
+    put:
+      summary: Set a new username
+      description: |-
+        Set a new username for the user with the given user ID.
+      operationId: setMyUserName
+      requestBody:
+        description: New username to set.
+        required: true
+        content:
+          application/json:
+            schema:
+              description: The new username of the user
+              type: object
+              properties:
+                username: { $ref: "#/components/schemas/Username" }
+      responses:
+        "200":
+          description: New username setted successfully
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "Action successfully completed"
+  #MAKE POST              
+  /users/{user_id}/posts:
+    parameters:
+      - name: user_id
+        in: path
+        description: The user id
+        schema: { $ref: "#/components/schemas/UserID" }
+        required: true
+    post:
+      summary: Upload a photo and create a post.
+      operationId: uploadPhoto
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              description: |-
+                The photo to upload and the caption of the post.
+              type: object
+              properties:
+                image: { $ref: "#/components/schemas/Image" }
+      responses:
+        "201":
+          description: Post created successfully
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "Resource successfully created"
+            multipart/form-data:
+              schema:
+                description: The post created
+                type: object
+                properties:
+                  post: { $ref: "#/components/schemas/Post" }
+                  time: { $ref: "#/components/schemas/TimeStamp" }
+  #FOLLOW USER
+  #UNFOLLOW USER
+  /users/{follower_id}/follow/{followed_id}:
+    parameters:
+      - name: follower_id
+        in: path
+        description: The user id of the user who wants to follow
+        schema: { $ref: "#/components/schemas/UserID" }
+        required: true
+      - name: followed_id
+        in: path
+        description: The user id of the user to be followed
+        schema: { $ref: "#/components/schemas/UserID" }
+        required: true
+    put:
+      summary: Follow a user
+      operationId: followUser
+      description: |-
+        The user with follower_id start to follow the one with followed_id.
+      responses:
+        "200":
+          description: User followed successfully
+          content:
+            plain/text:
+              schema:
+                type: string
+                example: "Action successfully completed"
+    delete:
+      summary: Unfollow a user
+      operationId: unfollowUser
+      description: |-
+        The user with follower_id no longer follow the one with followed_id.
+      responses:
+        "200":
+          description: User unfollowed successfully
+          content:
+            plain/text:
+              schema:
+                type: string
+                example: "Action successfully completed"
+  #BAN USER
+  #UNBAN USER
+  /users/{user_id}/banned/{toban_id}:
+    parameters:
+      - name: user_id
+        in: path
+        description: The user id of the user who wants to ban another user
+        schema: { $ref: "#/components/schemas/UserID" }
+        required: true
+      - name: toban_id
+        in: path
+        description: The user id of the user to be banned
+        schema: { $ref: "#/components/schemas/UserID" }
+        required: true
+    put:
+      summary: Ban a user
+      operationId: banUser
+      description: |-
+        The user with user_id ban the one with toban_id.
+      responses:
+        "200":
+          description: User banned successfully
+          content:
+            plain/text:
+              schema:
+                type: string
+                example: "Action successfully completed"
+    delete:
+      summary: Unban a user
+      operationId: unbanUser
+      description: |-
+        The user with toban_id is no longer blocked by the one with user_id
+      responses:
+        "200":
+          description: User unbanned successfully
+          content:
+            plain/text:
+              schema:
+                type: string
+                example: "Action successfully completed"
+  #GET USER PROFILE
+  /users/{user_id}/profile:
+    parameters:
+      - name: user_id
+        in: path
+        description: The user id of the user we want to get the profile
+        schema: { $ref: "#/components/schemas/UserID" }
+        required: true
+    get:
+      summary: Get a profile
+      operationId: getUserProfile
+      description: |-
+        Visualize the profile of the user with the given id
+      responses:
+        "200":
+          description: Profile got successfully
+          content:
+            plain/text:
+              schema:
+                type: string
+                example: "Action successfully completed"
+            application/json:
+              schema: { $ref: "#/components/schemas/Profile" }
+  #GET STREAM
+  /users/{user_id}:
+    parameters:
+      - name: user_id
+        in: path
+        description: The user id of the user we want to get the profile
+        schema: { $ref: "#/components/schemas/UserID" }
+        required: true
+    get:
+      summary: Get the personal stream
+      operationId: getMyStream
+      description: |-
+        Visualize the stream of the user, where the stream is the collection of posts of the users followed
+      responses:
+        "200":
+          description: Stream got successfully
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/PostsListObject" }
+  #LIKE POST
+  #UNLIKE POST
+  /users/{likked_id}/posts/{post_id}/likes/{user_id}:
+    parameters: 
+      - name: likked_id
+        in: path
+        description: The user id of the post owner
+        schema: { $ref: "#/components/schemas/UserID" }
+        required: true
+      - name: post_id
+        in: path
+        description: The post id
+        schema: { $ref: "#/components/schemas/PostID" }
+        required: true
+      - name: user_id
+        in: path
+        description: The user id of the user who wants to like or unlike the post
+        schema: { $ref: "#/components/schemas/UserID" }
+        required: true
+    put:
+      summary: Like the post
+      operationId: likePhoto
+      description: Like a post
+      responses:
+         "201":
+          description: Like created successfully
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "Resource successfully created"
+    delete:
+      summary: Unlike a post
+      operationId: unlikePhoto
+      description: Unlike the post
+      responses:
+        "200":
+          description: Like removed successfully
+          content:
+            text/plain:
+              schema: 
+                type: string
+                example: "Action successfully completed"
+  #COMMENT POST
+  #UNCOMMENT POST
+  /users/{commented_id}/posts/{post_id}/comments/{user_id}:
+    parameters: 
+      - name: commented_id
+        in: path
+        description: The user id of the post owner
+        schema: { $ref: "#/components/schemas/UserID" }
+        required: true
+      - name: post_id
+        in: path
+        description: The post id
+        schema: { $ref: "#/components/schemas/PostID" }
+        required: true
+      - name: user_id
+        in: path
+        description: The user id of the user who wants to comment or uncomment the post
+        schema: { $ref: "#/components/schemas/UserID" }
+        required: true
+    put:
+      summary: Comment the post
+      operationId: commentPhoto
+      description: Comment a post
+      responses:
+         "201":
+          description: Comment created successfully
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "Resource successfully created"
+    delete:
+      summary: Uncomment a post
+      operationId: uncommentPhoto
+      description: Uncomment the post
+      responses:
+        "200":
+          description: Comment deleted successfully
+          content:
+            text/plain:
+              schema: 
+                type: string
+                example: "Action successfully completed"
+  #DELETE POST
+  /users/{user_id}/posts/{post_id}:
+    parameters:
+      - name: user_id
+        in: path
+        description: The user id
+        schema: { $ref: "#/components/schemas/UserID" }
+        required: true
+      - name: post_id
+        in: path
+        description: The post id
+        schema: { $ref: "#/components/schemas/PostID" }
+        required: true
+    delete:
+      summary: Delete a post and the photo.
+      operationId: deletePhoto
+      responses:
+        "200":
+          description: Post deleted successfully
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "Resource successfully deleted"
+  #SEARCH USER
+  /users:
+    parameters:
+      - name: username
+        in: query
+        required: true
+        description: Username to search
+        schema: { $ref: "#/components/schemas/Username" }
+    get:
+      operationId: searchUsers
+      summary: Get the list of profiles
+      description: |-
+        Get the list of Users that match with the username specified in the query.
+      responses:
+        "200":
+          description: Get the list of profiles of the user
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/UsersListObject" }
+
+components:
+  schemas:
+    UserID:
+      title: User id
+      description: Unique numeric id of the user
+      type: integer
+      example: 10
+      minimum: 1
+      maximum: 9999999999
+      readOnly: true
+    Username:
+      title: Username
+      description: The username of the user
+      type: string
+      pattern: ^[a-z0-9]{3,16}$
+      example: "spazio99"
+      minLength: 3
+      maxLength: 16
+    User:
+      title: User
+      description: A user
+      type: object
+      properties:
+        user_id: { $ref: "#/components/schemas/UserID" }
+        username: { $ref: "#/components/schemas/Username" }
+    Profile:
+      title: Profile
+      description: The profile of the user with all his post and other info
+      type: object
+      properties:
+        user: { $ref: "#/components/schemas/User" }
+        followers_count:
+          description: Number of user that follow this profile
+          type: integer
+          example: 126
+          minimum: 0
+          maximum: 999999999
+        followed_count: 
+          description: Number of profile followed by this profile
+          type: integer
+          example: 33
+          minimum: 0
+          maximum: 999999999
+        post_count:
+          description: Number of post of this profile
+          type: integer
+          example: 27
+          minimum: 0
+          maximum: 999999999
+    Post:
+      title: Post
+      description: A pubblication of a picture of a user on his own profile
+      type: object
+      properties:
+        image: { $ref: "#/components/schemas/Image" }
+        likes_count:
+          description: Number of likes of the post
+          type: integer
+          example: 69
+          minimum: 0
+          maximum: 999999999
+        comments_count: 
+          description: Number of comments of the post
+          type: integer
+          example: 666
+          minimum: 0
+          maximum: 999999999
+    PostsList:
+      title: Posts List
+      description: List of posts
+      type: array
+      items: { $ref: "#/components/schemas/Post" }
+      minItems: 0
+      maxItems: 99999999
+    PostsListObject:
+      title: Post List Object
+      description: Object of post list
+      type: object
+      properties:
+        posts_list: { $ref: "#/components/schemas/PostsList" }
+    Image:
+      title: Image
+      description: The representation of a picture
+      type: object
+      properties:
+        image_url:
+          type: string
+          format: url
+    TimeStamp:
+      title: Time Stamp
+      description: Describe a time in the YY-MM-DD HH:MM:SS format
+      type: string
+      format: date-time
+      pattern: ^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$
+      example: "2023-11-12T14:59:37Z"
+    PostID:
+      title: PostID
+      description: Unique numeric id of the post
+      type: integer
+      example: 41
+      minimum: 0
+      maximum: 999999999
+    UsersList:
+      title: User List
+      description: List of users
+      type: array
+      items: { $ref: "#/components/schemas/User" }
+      minItems: 0
+      maxItems: 9999
+    UsersListObject:
+      title: Users List Object
+      description: Object of users list
+      type: object
+      properties:
+        users_list: { $ref: "#/components/schemas/UsersList" }

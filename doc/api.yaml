@@ -1,4 +1,4 @@
-openapi: 3.0.3
+openapi: 3.0.0
 info:
   title: WasaPhoto
   description: |-
@@ -11,15 +11,22 @@ servers:
     url: https://virtserver.swaggerhub.com/Spazio-D/WasaPhoto/1.0.0
   - url: "http://localhost:3000"
 
+security:
+  - bearerAuth: [] 
 
-
-#Da sistemare: Aggiungere varie response, altri path, aggregare quel che si puo nelle components, aggiungere tags
+tags:
+  - name: "Login"
+    description: "About login session"
+  - name: "Users"
+    description: "Users' paths and methods"
+  - name: "Posts"
+    description: "Posts' paths and methods"
 
 paths:
   #LOGIN
   /session:
     post:
-      tags: ["login"]
+      tags: ["Login"]
       summary: Logs in the user
       description: |-
         If the user does not exist, it will be created,
@@ -34,26 +41,28 @@ paths:
               description: The username of the user that wants to login
               type: object
               properties:
-                name: #ref username quando sarà nei components
-                  type: string
-                  example: Maria
-                  pattern: 'ˆ.*?$'
-                  minLength: 3
-                  maxLength: 16
+                username: { $ref: "#/components/schemas/Username" }
         required: true
-      responses: #aggiungere responses
-        '201':
-          description: User log-in action successful
+      security: []
+      responses:
+        "201":
+          description: |-
+            A new account has been created.
           content:
             application/json:
-              schema:
-                type: object
-                properties:
-                  identifier:
-                  # change here if you decide to use an integer
-                  # or any other type of identifier
-                    type: string
-                    example: "abcdef012345"
+              schema: { $ref: "#/components/schemas/AuthUser" }
+              example: { "user_id": 3546, "auth_code": 3546 }
+        "200":
+          description: |-
+            Log-in succesfull.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AuthUser" }
+              example: { "user_id": 245, "auth_code": 245 }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "500": { $ref: "#/components/responses/InternalServerError" }
+        "503": { $ref: "#/components/responses/ServiceUnavailable" }
+
   #SET USERNAME
   /users/{user_id}/username:
     parameters:
@@ -63,6 +72,7 @@ paths:
         schema: { $ref: "#/components/schemas/UserID" }
         required: true
     put:
+      tags: ["Users"]
       summary: Set a new username
       description: |-
         Set a new username for the user with the given user ID.
@@ -79,12 +89,19 @@ paths:
                 username: { $ref: "#/components/schemas/Username" }
       responses:
         "200":
-          description: New username setted successfully
+          description: Set new username successful
           content:
-            text/plain:
+            plain/text:
               schema:
+                description: Request success
                 type: string
                 example: "Action successfully completed"
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "500": { $ref: "#/components/responses/InternalServerError" }
+        "503": { $ref: "#/components/responses/ServiceUnavailable" }
+
   #MAKE POST              
   /users/{user_id}/posts:
     parameters:
@@ -94,6 +111,7 @@ paths:
         schema: { $ref: "#/components/schemas/UserID" }
         required: true
     post:
+      tags: ["Posts"]
       summary: Upload a photo and create a post.
       operationId: uploadPhoto
       requestBody:
@@ -111,6 +129,7 @@ paths:
           content:
             text/plain:
               schema:
+                description: Request success
                 type: string
                 example: "Resource successfully created"
             multipart/form-data:
@@ -120,9 +139,15 @@ paths:
                 properties:
                   post: { $ref: "#/components/schemas/Post" }
                   time: { $ref: "#/components/schemas/TimeStamp" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "500": { $ref: "#/components/responses/InternalServerError" }
+        "503": { $ref: "#/components/responses/ServiceUnavailable" }
+
   #FOLLOW USER
   #UNFOLLOW USER
-  /users/{follower_id}/follow/{followed_id}:
+  /users/{follower_id}/follows/{followed_id}:
     parameters:
       - name: follower_id
         in: path
@@ -135,6 +160,7 @@ paths:
         schema: { $ref: "#/components/schemas/UserID" }
         required: true
     put:
+      tags: ["Users"]
       summary: Follow a user
       operationId: followUser
       description: |-
@@ -145,9 +171,17 @@ paths:
           content:
             plain/text:
               schema:
+                description: Request success
                 type: string
                 example: "Action successfully completed"
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "500": { $ref: "#/components/responses/InternalServerError" }
+        "503": { $ref: "#/components/responses/ServiceUnavailable" }
+        
     delete:
+      tags: ["Users"]
       summary: Unfollow a user
       operationId: unfollowUser
       description: |-
@@ -158,8 +192,15 @@ paths:
           content:
             plain/text:
               schema:
+                description: Request success
                 type: string
                 example: "Action successfully completed"
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "500": { $ref: "#/components/responses/InternalServerError" }
+        "503": { $ref: "#/components/responses/ServiceUnavailable" }
+ 
   #BAN USER
   #UNBAN USER
   /users/{user_id}/banned/{toban_id}:
@@ -175,6 +216,7 @@ paths:
         schema: { $ref: "#/components/schemas/UserID" }
         required: true
     put:
+      tags: ["Users"]
       summary: Ban a user
       operationId: banUser
       description: |-
@@ -185,9 +227,15 @@ paths:
           content:
             plain/text:
               schema:
+                description: Request success
                 type: string
                 example: "Action successfully completed"
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "500": { $ref: "#/components/responses/InternalServerError" }
+        "503": { $ref: "#/components/responses/ServiceUnavailable" }
     delete:
+      tags: ["Users"]
       summary: Unban a user
       operationId: unbanUser
       description: |-
@@ -198,8 +246,14 @@ paths:
           content:
             plain/text:
               schema:
+                description: Request success
                 type: string
                 example: "Action successfully completed"
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "500": { $ref: "#/components/responses/InternalServerError" }
+        "503": { $ref: "#/components/responses/ServiceUnavailable" }
+
   #GET USER PROFILE
   /users/{user_id}/profile:
     parameters:
@@ -209,6 +263,7 @@ paths:
         schema: { $ref: "#/components/schemas/UserID" }
         required: true
     get:
+      tags: ["Users"]
       summary: Get a profile
       operationId: getUserProfile
       description: |-
@@ -219,10 +274,16 @@ paths:
           content:
             plain/text:
               schema:
+                description: Request success
                 type: string
                 example: "Action successfully completed"
             application/json:
               schema: { $ref: "#/components/schemas/Profile" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "500": { $ref: "#/components/responses/InternalServerError" }
+        "503": { $ref: "#/components/responses/ServiceUnavailable" }
+
   #GET STREAM
   /users/{user_id}:
     parameters:
@@ -232,6 +293,7 @@ paths:
         schema: { $ref: "#/components/schemas/UserID" }
         required: true
     get:
+      tags: ["Users"]
       summary: Get the personal stream
       operationId: getMyStream
       description: |-
@@ -242,6 +304,12 @@ paths:
           content:
             application/json:
               schema: { $ref: "#/components/schemas/PostsListObject" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "500": { $ref: "#/components/responses/InternalServerError" }
+        "503": { $ref: "#/components/responses/ServiceUnavailable" }
+
   #LIKE POST
   #UNLIKE POST
   /users/{likked_id}/posts/{post_id}/likes/{user_id}:
@@ -262,18 +330,26 @@ paths:
         schema: { $ref: "#/components/schemas/UserID" }
         required: true
     put:
+      tags: ["Posts"]
       summary: Like the post
       operationId: likePhoto
       description: Like a post
       responses:
-         "201":
+        "201":
           description: Like created successfully
           content:
             text/plain:
               schema:
+                description: Request success
                 type: string
                 example: "Resource successfully created"
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "500": { $ref: "#/components/responses/InternalServerError" }
+        "503": { $ref: "#/components/responses/ServiceUnavailable" }
     delete:
+      tags: ["Posts"]
       summary: Unlike a post
       operationId: unlikePhoto
       description: Unlike the post
@@ -285,6 +361,12 @@ paths:
               schema: 
                 type: string
                 example: "Action successfully completed"
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "500": { $ref: "#/components/responses/InternalServerError" }
+        "503": { $ref: "#/components/responses/ServiceUnavailable" }
+
   #COMMENT POST
   #UNCOMMENT POST
   /users/{commented_id}/posts/{post_id}/comments/{user_id}:
@@ -304,19 +386,27 @@ paths:
         description: The user id of the user who wants to comment or uncomment the post
         schema: { $ref: "#/components/schemas/UserID" }
         required: true
-    put:
+    post:
+      tags: ["Posts"]
       summary: Comment the post
       operationId: commentPhoto
       description: Comment a post
       responses:
-         "201":
+        "201":
           description: Comment created successfully
           content:
             text/plain:
               schema:
+                description: Request success
                 type: string
                 example: "Resource successfully created"
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "500": { $ref: "#/components/responses/InternalServerError" }
+        "503": { $ref: "#/components/responses/ServiceUnavailable" }
     delete:
+      tags: ["Posts"]
       summary: Uncomment a post
       operationId: uncommentPhoto
       description: Uncomment the post
@@ -326,8 +416,15 @@ paths:
           content:
             text/plain:
               schema: 
+                description: Request success
                 type: string
                 example: "Action successfully completed"
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "500": { $ref: "#/components/responses/InternalServerError" }
+        "503": { $ref: "#/components/responses/ServiceUnavailable" }
+
   #DELETE POST
   /users/{user_id}/posts/{post_id}:
     parameters:
@@ -342,6 +439,7 @@ paths:
         schema: { $ref: "#/components/schemas/PostID" }
         required: true
     delete:
+      tags: ["Posts"]
       summary: Delete a post and the photo.
       operationId: deletePhoto
       responses:
@@ -350,8 +448,15 @@ paths:
           content:
             text/plain:
               schema:
+                description: Request success
                 type: string
                 example: "Resource successfully deleted"
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "500": { $ref: "#/components/responses/InternalServerError" }
+        "503": { $ref: "#/components/responses/ServiceUnavailable" }
+
   #SEARCH USER
   /users:
     parameters:
@@ -361,7 +466,8 @@ paths:
         description: Username to search
         schema: { $ref: "#/components/schemas/Username" }
     get:
-      operationId: searchUsers
+      tags: ["Users"]
+      operationId: findUsers
       summary: Get the list of profiles
       description: |-
         Get the list of Users that match with the username specified in the query.
@@ -371,23 +477,35 @@ paths:
           content:
             application/json:
               schema: { $ref: "#/components/schemas/UsersListObject" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "500": { $ref: "#/components/responses/InternalServerError" }
+        "503": { $ref: "#/components/responses/ServiceUnavailable" }
+
 
 components:
+
+  securitySchemes:
+    bearerAuth:            
+      type: http
+      scheme: bearer
+ 
   schemas:
     UserID:
       title: User id
       description: Unique numeric id of the user
       type: integer
-      example: 10
-      minimum: 1
-      maximum: 9999999999
+      example: 348
+      minimum: 0
+      maximum: 9999999999999
       readOnly: true
     Username:
       title: Username
       description: The username of the user
       type: string
-      pattern: ^[a-z0-9]{3,16}$
-      example: "spazio99"
+      pattern: ^\w{3,16}$
+      example: "Spazio_99"
       minLength: 3
       maxLength: 16
     User:
@@ -408,19 +526,19 @@ components:
           type: integer
           example: 126
           minimum: 0
-          maximum: 999999999
+          maximum: 99999999999
         followed_count: 
           description: Number of profile followed by this profile
           type: integer
           example: 33
           minimum: 0
-          maximum: 999999999
+          maximum: 99999999999
         post_count:
           description: Number of post of this profile
           type: integer
           example: 27
           minimum: 0
-          maximum: 999999999
+          maximum: 99999999999
     Post:
       title: Post
       description: A pubblication of a picture of a user on his own profile
@@ -432,20 +550,20 @@ components:
           type: integer
           example: 69
           minimum: 0
-          maximum: 999999999
+          maximum: 99999999999
         comments_count: 
           description: Number of comments of the post
           type: integer
           example: 666
           minimum: 0
-          maximum: 999999999
+          maximum: 99999999999
     PostsList:
       title: Posts List
       description: List of posts
       type: array
       items: { $ref: "#/components/schemas/Post" }
       minItems: 0
-      maxItems: 99999999
+      maxItems: 999999999
     PostsListObject:
       title: Post List Object
       description: Object of post list
@@ -460,6 +578,8 @@ components:
         image_url:
           type: string
           format: url
+          minLength: 0
+          maxLength: 300
     TimeStamp:
       title: Time Stamp
       description: Describe a time in the YY-MM-DD HH:MM:SS format
@@ -467,13 +587,15 @@ components:
       format: date-time
       pattern: ^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$
       example: "2023-11-12T14:59:37Z"
+      minLength: 20
+      maxLength: 20
     PostID:
       title: PostID
       description: Unique numeric id of the post
       type: integer
       example: 41
       minimum: 0
-      maximum: 999999999
+      maximum: 9999999999999999
     UsersList:
       title: User List
       description: List of users
@@ -487,3 +609,79 @@ components:
       type: object
       properties:
         users_list: { $ref: "#/components/schemas/UsersList" }
+    AuthUser:
+      title: AuthUser
+      description: The authorization code for a user is his user_id.
+      type: object
+      properties:
+        user: { $ref: "#/components/schemas/User" }
+        auth_code: 
+          title: Authorization code
+          description: The authorization code for a user is his user_id.
+          type: integer
+          example: 35498
+          minimum: 1
+          maximum: 9999999999999
+      example: { "user_id": 5370, "auth_code": 5370 }
+
+  responses:
+    #400
+    BadRequest:
+      description: |-
+        The server cannot or will not process the request due to an apparent client error (e.g., malformed request syntax, size too large, invalid request message framing, or deceptiverequest routing).
+      content:
+        text/plain:
+          schema:
+            description: Bad Request
+            type: string
+            example: "Bad Request, maybe sintax error"
+            minLength: 5
+            maxLength: 100
+    #401
+    Unauthorized:
+      description: |-
+            Used when authentication is required and has failed or has not yet been provided. Semantically means "unauthorised", the user does not have valid authentication credentials for the target resource.
+      content:
+        text/plain:
+          schema:
+            description: Unauthorized
+            type: string
+            example: "Unauthorized"
+            minLength: 5
+            maxLength: 100
+    #403
+    Forbidden:
+      description: |-
+        The request contained valid data and was understood by the server, but the server is refusing action. This may be due to the user not having the necessary permissions for a resource or needing an account of some sort, or attempting a prohibited action (e.g. creating a duplicate record where only one is allowed).
+      content:
+        text/plain:
+          schema:
+            description: Forbidden
+            type: string
+            example: "Forbidden"
+            minLength: 5
+            maxLength: 100
+    #500
+    InternalServerError:
+      description: |-
+        A generic error message, given when an unexpected condition was encountered and no more specific message is suitable.
+      content:
+        text/plain:
+          schema:
+            description: Internal Server Error
+            type: string
+            example: "Internal Server Error"
+            minLength: 5
+            maxLength: 100
+    #503
+    ServiceUnavailable:
+      description: |-
+        The server cannot handle the request (because it is overloaded or down for maintenance). Generally, this is a temporary state.      
+      content:
+        text/plain:
+          schema:
+            description: Service Unavailable
+            type: string
+            example: "Service Unavailable"
+            minLength: 5
+            maxLength: 100

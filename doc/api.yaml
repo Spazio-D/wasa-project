@@ -112,6 +112,7 @@ paths:
         required: true
     post:
       tags: ["Posts"]
+      description: Upload a photo and create a post.
       summary: Upload a photo and create a post.
       operationId: uploadPhoto
       requestBody:
@@ -255,7 +256,7 @@ paths:
         "503": { $ref: "#/components/responses/ServiceUnavailable" }
 
   #GET USER PROFILE
-  /users/{user_id}/profile:
+  /users/{user_id}:
     parameters:
       - name: user_id
         in: path
@@ -285,7 +286,7 @@ paths:
         "503": { $ref: "#/components/responses/ServiceUnavailable" }
 
   #GET STREAM
-  /users/{user_id}:
+  /users/{user_id}/stream:
     parameters:
       - name: user_id
         in: path
@@ -359,6 +360,7 @@ paths:
           content:
             text/plain:
               schema: 
+                description: Request success
                 type: string
                 example: "Action successfully completed"
         "400": { $ref: "#/components/responses/BadRequest" }
@@ -369,7 +371,7 @@ paths:
 
   #COMMENT POST
   #UNCOMMENT POST
-  /users/{commented_id}/posts/{post_id}/comments/{user_id}:
+  /users/{commented_id}/posts/{post_id}/comments:
     parameters: 
       - name: commented_id
         in: path
@@ -380,11 +382,6 @@ paths:
         in: path
         description: The post id
         schema: { $ref: "#/components/schemas/PostID" }
-        required: true
-      - name: user_id
-        in: path
-        description: The user id of the user who wants to comment or uncomment the post
-        schema: { $ref: "#/components/schemas/UserID" }
         required: true
     post:
       tags: ["Posts"]
@@ -440,6 +437,7 @@ paths:
         required: true
     delete:
       tags: ["Posts"]
+      description: Delete the post
       summary: Delete a post and the photo.
       operationId: deletePhoto
       responses:
@@ -576,6 +574,7 @@ components:
       type: object
       properties:
         image_url:
+          description: The picture's path
           type: string
           format: url
           minLength: 0

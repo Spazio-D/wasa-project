@@ -31,22 +31,30 @@ Then you can initialize the AppDatabase and pass it to the api package.
 package database
 
 import (
+	"context"
 	"database/sql"
 	"errors"
 	"fmt"
 )
 
-// AppDatabase is the high level interface for the DB
-type AppDatabase interface {
-	
-	GetName() (string, error)
-	SetName(name string) error
-
-	Ping() error
+type appdbimpl struct {
+	c   *sql.DB
+	ctx context.Context
 }
 
-type appdbimpl struct {
-	c *sql.DB
+// AppDatabase is the high level interface for the DB
+type AppDatabase interface {
+
+	//Check if the username is already taken
+	UsernameTaken(username string) (bool, error)
+
+	//Create a new user and return it
+	CreateUser(user User) (User, error)
+
+	//Get a user by its username
+	GetUserByUsername(username string) (User, error)
+
+	Ping() error
 }
 
 // New returns a new instance of AppDatabase based on the SQLite connection `db`.
@@ -68,7 +76,8 @@ func New(db *sql.DB) (AppDatabase, error) {
 	}
 
 	return &appdbimpl{
-		c: db,
+		c:   db,
+		ctx: context.Background(),
 	}, nil
 }
 

@@ -1,6 +1,6 @@
 package database
 
 type User struct {
-	UserID   int    `json:"userID"`
+	Id       int    `json:"id"`
 	Username string `json:"username"`
 }

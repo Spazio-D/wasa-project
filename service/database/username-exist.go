@@ -7,7 +7,7 @@ import (
 
 var query_searchUsername = `SELECT username FROM User WHERE username = ?`
 
-func (db *appdbimpl) UsernameTaken(username string) (bool, error) {
+func (db *appdbimpl) UsernameExist(username string) (bool, error) {
 	var result string
 	err := db.c.QueryRow(query_searchUsername, username).Scan(&result)
 	if err != nil && errors.Is(err, sql.ErrNoRows) {

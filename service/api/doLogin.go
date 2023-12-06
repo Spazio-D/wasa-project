@@ -19,13 +19,13 @@ func (rt *_router) doLogin(w http.ResponseWriter, r *http.Request, ps httprouter
 	}
 
 	//Check if the username is valid
-	if !user.isValid() {
+	if !user.IsValid() {
 		http.Error(w, "Invalid username", http.StatusBadRequest)
 		return
 	}
 
-	//Check if the username is already taken
-	exist, err := rt.db.UsernameTaken(user.Username)
+	//Check if the username exist
+	exist, err := rt.db.UsernameExist(user.Username)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("Can't check if the username is already taken")
 		w.WriteHeader(http.StatusInternalServerError)

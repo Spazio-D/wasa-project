@@ -12,7 +12,7 @@ type User struct {
 }
 
 // Check if the username is valid
-func (user *User) isValid() bool {
+func (user *User) IsValid() bool {
 	return regexp.MustCompile(`^\w{3,16}$`).MatchString(user.Username)
 }
 

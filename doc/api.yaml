@@ -17,10 +17,10 @@ security:
 tags:
   - name: "Login"
     description: "About login session"
-  - name: "Users"
-    description: "Users' paths and methods"
-  - name: "Posts"
-    description: "Posts' paths and methods"
+  - name: "User"
+    description: "User's paths and methods"
+  - name: "Post"
+    description: "Post's paths and methods"
 
 paths:
   #LOGIN
@@ -72,7 +72,7 @@ paths:
         schema: { $ref: "#/components/schemas/UserID" }
         required: true
     put:
-      tags: ["Users"]
+      tags: ["User"]
       summary: Set a new username
       description: |-
         Set a new username for the user with the given user ID.
@@ -91,7 +91,7 @@ paths:
         "200":
           description: Set new username successful
           content:
-            plain/text:
+            text/plain:
               schema:
                 description: Request success
                 type: string
@@ -111,7 +111,7 @@ paths:
         schema: { $ref: "#/components/schemas/UserID" }
         required: true
     post:
-      tags: ["Posts"]
+      tags: ["Post"]
       description: Upload a photo and create a post.
       summary: Upload a photo and create a post.
       operationId: uploadPhoto
@@ -161,7 +161,7 @@ paths:
         schema: { $ref: "#/components/schemas/UserID" }
         required: true
     put:
-      tags: ["Users"]
+      tags: ["User"]
       summary: Follow a user
       operationId: followUser
       description: |-
@@ -170,7 +170,7 @@ paths:
         "200":
           description: User followed successfully
           content:
-            plain/text:
+            text/plain:
               schema:
                 description: Request success
                 type: string
@@ -182,7 +182,7 @@ paths:
         "503": { $ref: "#/components/responses/ServiceUnavailable" }
         
     delete:
-      tags: ["Users"]
+      tags: ["User"]
       summary: Unfollow a user
       operationId: unfollowUser
       description: |-
@@ -191,7 +191,7 @@ paths:
         "200":
           description: User unfollowed successfully
           content:
-            plain/text:
+            text/plain:
               schema:
                 description: Request success
                 type: string
@@ -217,7 +217,7 @@ paths:
         schema: { $ref: "#/components/schemas/UserID" }
         required: true
     put:
-      tags: ["Users"]
+      tags: ["User"]
       summary: Ban a user
       operationId: banUser
       description: |-
@@ -226,7 +226,7 @@ paths:
         "200":
           description: User banned successfully
           content:
-            plain/text:
+            text/plain:
               schema:
                 description: Request success
                 type: string
@@ -236,7 +236,7 @@ paths:
         "500": { $ref: "#/components/responses/InternalServerError" }
         "503": { $ref: "#/components/responses/ServiceUnavailable" }
     delete:
-      tags: ["Users"]
+      tags: ["User"]
       summary: Unban a user
       operationId: unbanUser
       description: |-
@@ -245,7 +245,7 @@ paths:
         "200":
           description: User unbanned successfully
           content:
-            plain/text:
+            text/plain:
               schema:
                 description: Request success
                 type: string
@@ -264,7 +264,7 @@ paths:
         schema: { $ref: "#/components/schemas/UserID" }
         required: true
     get:
-      tags: ["Users"]
+      tags: ["User"]
       summary: Get a profile
       operationId: getUserProfile
       description: |-
@@ -273,7 +273,7 @@ paths:
         "200":
           description: Profile got successfully
           content:
-            plain/text:
+            text/plain:
               schema:
                 description: Request success
                 type: string
@@ -294,7 +294,7 @@ paths:
         schema: { $ref: "#/components/schemas/UserID" }
         required: true
     get:
-      tags: ["Users"]
+      tags: ["User"]
       summary: Get the personal stream
       operationId: getMyStream
       description: |-
@@ -331,7 +331,7 @@ paths:
         schema: { $ref: "#/components/schemas/UserID" }
         required: true
     put:
-      tags: ["Posts"]
+      tags: ["Post"]
       summary: Like the post
       operationId: likePhoto
       description: Like a post
@@ -350,7 +350,7 @@ paths:
         "500": { $ref: "#/components/responses/InternalServerError" }
         "503": { $ref: "#/components/responses/ServiceUnavailable" }
     delete:
-      tags: ["Posts"]
+      tags: ["Post"]
       summary: Unlike a post
       operationId: unlikePhoto
       description: Unlike the post
@@ -384,7 +384,7 @@ paths:
         schema: { $ref: "#/components/schemas/PostID" }
         required: true
     post:
-      tags: ["Posts"]
+      tags: ["Post"]
       summary: Comment the post
       operationId: commentPhoto
       description: Comment a post
@@ -403,7 +403,7 @@ paths:
         "500": { $ref: "#/components/responses/InternalServerError" }
         "503": { $ref: "#/components/responses/ServiceUnavailable" }
     delete:
-      tags: ["Posts"]
+      tags: ["Post"]
       summary: Uncomment a post
       operationId: uncommentPhoto
       description: Uncomment the post
@@ -436,7 +436,7 @@ paths:
         schema: { $ref: "#/components/schemas/PostID" }
         required: true
     delete:
-      tags: ["Posts"]
+      tags: ["Post"]
       description: Delete the post
       summary: Delete a post and the photo.
       operationId: deletePhoto
@@ -464,7 +464,7 @@ paths:
         description: Username to search
         schema: { $ref: "#/components/schemas/Username" }
     get:
-      tags: ["Users"]
+      tags: ["User"]
       operationId: findUsers
       summary: Get the list of profiles
       description: |-

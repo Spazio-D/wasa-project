@@ -45,14 +45,17 @@ type appdbimpl struct {
 // AppDatabase is the high level interface for the DB
 type AppDatabase interface {
 
-	//Check if the username is already taken
-	UsernameTaken(username string) (bool, error)
+	//Check if the username is in the database
+	UsernameExist(username string) (bool, error)
 
 	//Create a new user and return it
 	CreateUser(user User) (User, error)
 
 	//Get a user by its username
 	GetUserByUsername(username string) (User, error)
+
+	//Change the username of a user
+	ChangeUsername(username string, userId int) error
 
 	Ping() error
 }

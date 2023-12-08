@@ -119,8 +119,7 @@ paths:
         content:
           multipart/form-data:
             schema:
-              description: |-
-                The photo to upload and the caption of the post.
+              description: The image to upload.
               type: object
               properties:
                 image: { $ref: "#/components/schemas/Image" }
@@ -491,7 +490,7 @@ components:
  
   schemas:
     UserID:
-      title: User id
+      title: UserID
       description: Unique numeric id of the user
       type: integer
       example: 348
@@ -556,31 +555,27 @@ components:
           minimum: 0
           maximum: 99999999999
     PostsList:
-      title: Posts List
+      title: PostsList
       description: List of posts
       type: array
       items: { $ref: "#/components/schemas/Post" }
       minItems: 0
       maxItems: 999999999
     PostsListObject:
-      title: Post List Object
+      title: PostListObject
       description: Object of post list
       type: object
       properties:
         posts_list: { $ref: "#/components/schemas/PostsList" }
     Image:
       title: Image
-      description: The representation of a picture
-      type: object
-      properties:
-        image_url:
-          description: The picture's path
-          type: string
-          format: url
-          minLength: 0
-          maxLength: 300
+      description: A image represented in base64
+      type: string
+      format: byte
+      minLength: 0
+      maxLength: 1000000000
     TimeStamp:
-      title: Time Stamp
+      title: TimeStamp
       description: Describe a time in the YY-MM-DD HH:MM:SS format
       type: string
       format: date-time
@@ -596,14 +591,14 @@ components:
       minimum: 0
       maximum: 9999999999999999
     UsersList:
-      title: User List
+      title: UserList
       description: List of users
       type: array
       items: { $ref: "#/components/schemas/User" }
       minItems: 0
       maxItems: 9999
     UsersListObject:
-      title: Users List Object
+      title: UsersListObject
       description: Object of users list
       type: object
       properties:
@@ -615,7 +610,7 @@ components:
       properties:
         user: { $ref: "#/components/schemas/User" }
         auth_code: 
-          title: Authorization code
+          title: AuthCode
           description: The authorization code for a user is his user_id.
           type: integer
           example: 35498

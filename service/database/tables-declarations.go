@@ -2,7 +2,7 @@ package database
 
 var userTable = `CREATE TABLE IF NOT EXISTS User
 (
-	id INTEGER, 
+	id INTEGER NOT NULL UNIQUE, 
 	username VARCHAR(16) NOT NULL UNIQUE,
 	timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
 	PRIMARY KEY(id)
@@ -10,8 +10,8 @@ var userTable = `CREATE TABLE IF NOT EXISTS User
 
 var postTable = `CREATE TABLE IF NOT EXIST Post 
 (
-	id INTEGER,
-	user_id INTEGER,
+	id INTEGER NOT NULL,
+	user_id INTEGER NOT NULL,
 	timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
 	PRIMARY KEY(id, user_id),
 	FOREIGN KEY(user_id) REFERENCES User(id)
@@ -20,10 +20,10 @@ var postTable = `CREATE TABLE IF NOT EXIST Post
 
 var commentTable = `CREATE TABLE IF NOT EXISTS Comment
 (
-	id INTEGER,
-	user_id INTEGER,
-	owner_id INTEGER,
-	post_id INTEGER,
+	id INTEGER NOT NULL,
+	user_id INTEGER NOT NULL,
+	owner_id INTEGER NOT NULL,
+	post_id INTEGER NOT NULL,
 	text TEXT NOT NULL,
 	timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
 	PRIMARY KEY(id, owner_id, post_id),
@@ -35,9 +35,9 @@ var commentTable = `CREATE TABLE IF NOT EXISTS Comment
 
 var likeTable = `CREATE TABLE IF NOT EXISTS Like
 (
-	user_id INTEGER,
-	post_id INTEGER,
-	owner_id INTEGER,
+	user_id INTEGER NOT NULL,
+	post_id INTEGER NOT NULL,
+	owner_id INTEGER NOT NULL,
 	timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
 	PRIMARY KEY(user_id, post_id, owner_id),
 	FOREIGN KEY(post_id, owner_id) REFERENCES Post(id, owner_id)
@@ -48,8 +48,8 @@ var likeTable = `CREATE TABLE IF NOT EXISTS Like
 
 var followTable = `CREATE TABLE IF NOT EXISTS Follow
 (
-	follower_id INTEGER,
-	followed_id INTEGER,
+	follower_id INTEGER NOT NULL,
+	followed_id INTEGER NOT NULL,
 	PRIMARY KEY(follower_id, followed_id),
 	FOREIGN KEY(follower_id) REFERENCES User(id)
 		ON DELETE CASCADE,

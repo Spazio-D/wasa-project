@@ -57,6 +57,12 @@ type AppDatabase interface {
 	//Change the username of a user
 	ChangeUsername(username string, userId int) error
 
+	//Get a user by its id
+	GetUserById(id int) (User, error)
+
+	//Create a new post and return it
+	CreatePost(post Post, data []byte) (Post, error)
+
 	Ping() error
 }
 

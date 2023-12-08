@@ -7,13 +7,13 @@ import (
 	"os"
 )
 
-var query_max_id = `SELECT MAX(id) FROM User`
+var query_max_user_id = `SELECT MAX(id) FROM User`
 var query_insert_user = `INSERT INTO User (id, username) VALUES (?, ?)`
 
 func (db *appdbimpl) CreateUser(user User) (User, error) {
 	var id int
 
-	err := db.c.QueryRow(query_max_id).Scan(&id)
+	err := db.c.QueryRow(query_max_user_id).Scan(&id)
 	if err != nil && errors.Is(err, sql.ErrNoRows) {
 		user.Id = 1
 	} else if err != nil {

@@ -55,13 +55,34 @@ type AppDatabase interface {
 	GetUserByUsername(username string) (User, error)
 
 	//Change the username of a user
-	ChangeUsername(username string, userId int) error
+	ChangeUsername(username string, userID int) error
 
 	//Get a user by its id
-	GetUserById(id int) (User, error)
+	GetUserByID(id int) (User, error)
 
 	//Create a new post and return it
 	CreatePost(post Post, data []byte) (Post, error)
+
+	//Return true if the followerID user is following the followedID user
+	IsFollowing(followerID int, followedID int) (bool, error)
+
+	//Return true if the bannerID user has banned the bannedID user
+	IsBanned(bannerID int, bannedID int) (bool, error)
+
+	//Create a follow relationship between the users
+	CreateFollow(followerID int, followedID int) error
+
+	//Delete a follow relationship between the users
+	DeleteFollow(followerID int, followedID int) error
+
+	//Create a ban relationship between two users
+	CreateBan(bannerID int, bannedID int) error
+
+	//Delete a ban relationship between two users
+	DeleteBan(bannerID int, bannedID int) error
+
+	//Get the profile of a user
+	GetUserProfile(targetUserID int, askingUserID int) (Profile, error)
 
 	Ping() error
 }

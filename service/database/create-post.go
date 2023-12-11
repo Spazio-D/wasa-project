@@ -12,13 +12,13 @@ var query_create_post = `INSERT INTO Post (id, user_id,) VALUES (?, ?)`
 
 func (db *appdbimpl) CreatePost(post Post, data []byte) (Post, error) {
 	var id int
-	err := db.c.QueryRow(query_max_post_id, post.User.Id).Scan(&id)
-	if err != nil && errors.Is(err, sql.ErrNoRows) {
-		post.Id = 1
+	err := db.c.QueryRow(query_max_post_id, post.User.ID).Scan(&id)
+	if errors.Is(err, sql.ErrNoRows) {
+		post.ID = 1
 	} else if err != nil {
 		return post, err
 	} else {
-		post.Id = id + 1
+		post.ID = id + 1
 	}
 
 	path := post.GetPaht()
@@ -27,7 +27,7 @@ func (db *appdbimpl) CreatePost(post Post, data []byte) (Post, error) {
 		return post, err
 	}
 
-	_, err = db.c.Exec(query_create_post, post.Id, post.User.Id)
+	_, err = db.c.Exec(query_create_post, post.ID, post.User.ID)
 	if err != nil {
 		return post, err
 	}

@@ -1,0 +1,6 @@
+----"Spazio-D/wasa-project/service/database/create-ban.go"----
+Cancellare like e commenti a tutti e due gli user
+    (da fare dopo aver creato le funzioni per cancellare like e commenti)
+
+----"Spazio-D/wasa-project/service/api/banUser.go"----
+Chiamare la create-ban

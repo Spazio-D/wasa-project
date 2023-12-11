@@ -203,16 +203,16 @@ paths:
  
   #BAN USER
   #UNBAN USER
-  /users/{user_id}/banned/{toban_id}:
+  /users/{user_id}/banned/{target_user_id}:
     parameters:
       - name: user_id
         in: path
-        description: The user id of the user who wants to ban another user
+        description: The user id of the user who wants to ban or unban
         schema: { $ref: "#/components/schemas/UserID" }
         required: true
-      - name: toban_id
+      - name: target_user_id
         in: path
-        description: The user id of the user to be banned
+        description: The user id of the target user
         schema: { $ref: "#/components/schemas/UserID" }
         required: true
     put:
@@ -220,7 +220,7 @@ paths:
       summary: Ban a user
       operationId: banUser
       description: |-
-        The user with user_id ban the one with toban_id.
+        The user with user_id ban the one with target_user_id.
       responses:
         "200":
           description: User banned successfully
@@ -239,7 +239,7 @@ paths:
       summary: Unban a user
       operationId: unbanUser
       description: |-
-        The user with toban_id is no longer blocked by the one with user_id
+        The user with target_user_id is no longer blocked by the one with user_id
       responses:
         "200":
           description: User unbanned successfully

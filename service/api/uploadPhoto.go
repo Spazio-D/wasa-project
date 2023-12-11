@@ -11,13 +11,13 @@ import (
 )
 
 func (rt *_router) uploadPhoto(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
-	userId, err := strconv.Atoi(ps.ByName("user_id"))
+	userID, err := strconv.Atoi(ps.ByName("user_id"))
 	if err != nil {
 		http.Error(w, "Bad Request "+err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	if userId != ctx.UserID {
+	if userID != ctx.UserID {
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
@@ -49,7 +49,7 @@ func (rt *_router) uploadPhoto(w http.ResponseWriter, r *http.Request, ps httpro
 
 	defer func() { err = file.Close() }()
 
-	dbUser, err := rt.db.GetUserById(userId)
+	dbUser, err := rt.db.GetUserByID(userID)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("Can't get the user")
 		http.Error(w, "Internal Server Error ", http.StatusInternalServerError)

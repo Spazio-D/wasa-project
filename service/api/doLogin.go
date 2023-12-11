@@ -53,7 +53,7 @@ func (rt *_router) doLogin(w http.ResponseWriter, r *http.Request, ps httprouter
 		w.WriteHeader(http.StatusOK)
 	}
 
-	authUser := AuthUser{user, user.Id}
+	authUser := AuthUser{user, user.ID}
 
 	w.Header().Set("content-type", "application/json")
 	if err := json.NewEncoder(w).Encode(authUser); err != nil {

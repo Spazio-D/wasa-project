@@ -9,7 +9,7 @@ import (
 
 // USER STRUCT AND METHODS
 type User struct {
-	Id       int    `json:"id"`
+	ID       int    `json:"id"`
 	Username string `json:"username"`
 }
 
@@ -21,14 +21,14 @@ func (user *User) IsValid() bool {
 // Convert the user from api struct to database struct
 func (user *User) DatabaseConversion() database.User {
 	return database.User{
-		Id:       user.Id,
+		ID:       user.ID,
 		Username: user.Username,
 	}
 }
 
 // Convert the user from database struct to api struct
 func (user *User) ApiConversion(dbUser database.User) {
-	user.Id = dbUser.Id
+	user.ID = dbUser.ID
 	user.Username = dbUser.Username
 }
 
@@ -40,7 +40,7 @@ type AuthUser struct {
 
 // POST STRUCT AND METHODS
 type Post struct {
-	Id            int       `json:"id"`
+	ID            int       `json:"id"`
 	User          User      `json:"user"`
 	Image         string    `json:"image"`
 	LikesCount    int       `json:"likesCount"`
@@ -51,8 +51,8 @@ type Post struct {
 // Convert the post from api struct to database struct
 func (post *Post) DatabaseConversion() database.Post {
 	return database.Post{
-		Id:            post.Id,
-		User:          database.User{Id: post.User.Id, Username: post.User.Username},
+		ID:            post.ID,
+		User:          database.User{ID: post.User.ID, Username: post.User.Username},
 		LikesCount:    post.LikesCount,
 		CommentsCount: post.CommentsCount,
 		Timestamp:     post.Timestamp,
@@ -69,12 +69,34 @@ func (post *Post) ApiConversion(dbPost database.Post) error {
 	var user User
 	user.ApiConversion(dbPost.User)
 
-	post.Id = dbPost.Id
+	post.ID = dbPost.ID
 	post.User = user
 	post.Image = image
 	post.LikesCount = dbPost.LikesCount
 	post.CommentsCount = dbPost.CommentsCount
 	post.Timestamp = dbPost.Timestamp
+
+	return nil
+}
+
+// PROFILE STRUCT AND METHODS
+type Profile struct {
+	User          User `json:"user"`
+	FollowerCount int  `json:"followersCount"`
+	FollowedCount int  `json:"followedCount"`
+	PostsCount    int  `json:"postsCount"`
+	FollowCheck   bool `json:"followCheck"`
+}
+
+func (profile *Profile) ApiConversion(dbProfile database.Profile) error {
+	var user User
+	user.ApiConversion(dbProfile.User)
+
+	profile.User = user
+	profile.FollowerCount = dbProfile.FollowersCount
+	profile.FollowedCount = dbProfile.FollowedCount
+	profile.PostsCount = dbProfile.PostsCount
+	profile.FollowCheck = dbProfile.FollowCheck
 
 	return nil
 }

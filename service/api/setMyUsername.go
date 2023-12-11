@@ -10,13 +10,13 @@ import (
 )
 
 func (rt *_router) setMyUserName(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
-	userId, err := strconv.Atoi(ps.ByName("user_id"))
+	userID, err := strconv.Atoi(ps.ByName("user_id"))
 	if err != nil {
 		http.Error(w, "Bad Request "+err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	if userId != ctx.UserID {
+	if userID != ctx.UserID {
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
@@ -44,7 +44,7 @@ func (rt *_router) setMyUserName(w http.ResponseWriter, r *http.Request, ps http
 		return
 	}
 
-	if err := rt.db.ChangeUsername(user.Username, userId); err != nil {
+	if err := rt.db.ChangeUsername(user.Username, userID); err != nil {
 		http.Error(w, "Internal Server Error"+err.Error(), http.StatusInternalServerError)
 		return
 	}

@@ -21,7 +21,7 @@ func (db *appdbimpl) CreatePost(post Post, data []byte) (Post, error) {
 		post.ID = id + 1
 	}
 
-	path := post.GetPaht()
+	path := post.GetPath()
 	err = utils.SaveAndResizeImage(path, data, os.ModePerm)
 	if err != nil {
 		return post, err

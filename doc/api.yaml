@@ -23,8 +23,10 @@ tags:
     description: "Post's paths and methods"
 
 paths:
+
   #LOGIN
   /session:
+
     post:
       tags: ["Login"]
       summary: Logs in the user
@@ -71,6 +73,7 @@ paths:
         description: The user id
         schema: { $ref: "#/components/schemas/UserID" }
         required: true
+
     put:
       tags: ["User"]
       summary: Set a new username
@@ -110,6 +113,7 @@ paths:
         description: The user id
         schema: { $ref: "#/components/schemas/UserID" }
         required: true
+
     post:
       tags: ["Post"]
       description: Upload a photo and create a post.
@@ -159,6 +163,7 @@ paths:
         description: The user id of the user to be followed
         schema: { $ref: "#/components/schemas/UserID" }
         required: true
+
     put:
       tags: ["User"]
       summary: Follow a user
@@ -215,6 +220,7 @@ paths:
         description: The user id of the target user
         schema: { $ref: "#/components/schemas/UserID" }
         required: true
+
     put:
       tags: ["User"]
       summary: Ban a user
@@ -234,6 +240,7 @@ paths:
         "401": { $ref: "#/components/responses/Unauthorized" }
         "500": { $ref: "#/components/responses/InternalServerError" }
         "503": { $ref: "#/components/responses/ServiceUnavailable" }
+
     delete:
       tags: ["User"]
       summary: Unban a user
@@ -262,6 +269,7 @@ paths:
         description: The user id of the user we want to get the profile
         schema: { $ref: "#/components/schemas/UserID" }
         required: true
+
     get:
       tags: ["User"]
       summary: Get a profile
@@ -292,6 +300,7 @@ paths:
         description: The user id of the user we want to get the profile
         schema: { $ref: "#/components/schemas/UserID" }
         required: true
+
     get:
       tags: ["User"]
       summary: Get the personal stream
@@ -303,7 +312,7 @@ paths:
           description: Stream got successfully
           content:
             application/json:
-              schema: { $ref: "#/components/schemas/PostsListObject" }
+              schema: { $ref: "#/components/schemas/PostsList" }
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/Unauthorized" }
         "403": { $ref: "#/components/responses/Forbidden" }
@@ -312,9 +321,9 @@ paths:
 
   #LIKE POST
   #UNLIKE POST
-  /users/{likked_id}/posts/{post_id}/likes/{user_id}:
+  /users/{liked_id}/posts/{post_id}/likes/{user_id}:
     parameters: 
-      - name: likked_id
+      - name: liked_id
         in: path
         description: The user id of the post owner
         schema: { $ref: "#/components/schemas/UserID" }
@@ -329,6 +338,7 @@ paths:
         description: The user id of the user who wants to like or unlike the post
         schema: { $ref: "#/components/schemas/UserID" }
         required: true
+
     put:
       tags: ["Post"]
       summary: Like the post
@@ -336,7 +346,7 @@ paths:
       description: Like a post
       responses:
         "201":
-          description: Like created successfully
+          description: Like added successfully
           content:
             text/plain:
               schema:
@@ -348,6 +358,7 @@ paths:
         "403": { $ref: "#/components/responses/Forbidden" }
         "500": { $ref: "#/components/responses/InternalServerError" }
         "503": { $ref: "#/components/responses/ServiceUnavailable" }
+
     delete:
       tags: ["Post"]
       summary: Unlike a post
@@ -369,7 +380,6 @@ paths:
         "503": { $ref: "#/components/responses/ServiceUnavailable" }
 
   #COMMENT POST
-  #UNCOMMENT POST
   /users/{commented_id}/posts/{post_id}/comments:
     parameters: 
       - name: commented_id
@@ -382,25 +392,47 @@ paths:
         description: The post id
         schema: { $ref: "#/components/schemas/PostID" }
         required: true
+
     post:
       tags: ["Post"]
       summary: Comment the post
       operationId: commentPhoto
       description: Comment a post
+      requestBody:
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/Comment" }
       responses:
         "201":
-          description: Comment created successfully
+          description: Comment added successfully
           content:
-            text/plain:
-              schema:
-                description: Request success
-                type: string
-                example: "Resource successfully created"
+            application/json:
+              schema: { $ref: "#/components/schemas/Comment" }
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/Unauthorized" }
         "403": { $ref: "#/components/responses/Forbidden" }
         "500": { $ref: "#/components/responses/InternalServerError" }
         "503": { $ref: "#/components/responses/ServiceUnavailable" }
+    
+  #UNCOMMENT POST
+  /users/{commented_id}/posts/{post_id}/comments/{comment_id}:
+    parameters: 
+      - name: commented_id
+        in: path
+        description: The user id of the post owner
+        schema: { $ref: "#/components/schemas/UserID" }
+        required: true
+      - name: post_id
+        in: path
+        description: The post id
+        schema: { $ref: "#/components/schemas/PostID" }
+        required: true
+      - name: comment_id
+        in: path
+        description: The comment id
+        schema: { $ref: "#/components/schemas/CommentID" }
+        required: true
+
     delete:
       tags: ["Post"]
       summary: Uncomment a post
@@ -408,7 +440,7 @@ paths:
       description: Uncomment the post
       responses:
         "200":
-          description: Comment deleted successfully
+          description: Comment removed successfully
           content:
             text/plain:
               schema: 
@@ -434,6 +466,7 @@ paths:
         description: The post id
         schema: { $ref: "#/components/schemas/PostID" }
         required: true
+
     delete:
       tags: ["Post"]
       description: Delete the post
@@ -462,6 +495,7 @@ paths:
         required: true
         description: Username to search
         schema: { $ref: "#/components/schemas/Username" }
+
     get:
       tags: ["User"]
       operationId: findUsers
@@ -473,7 +507,7 @@ paths:
           description: Get the list of profiles of the user
           content:
             application/json:
-              schema: { $ref: "#/components/schemas/UsersListObject" }
+              schema: { $ref: "#/components/schemas/UsersList" }
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/Unauthorized" }
         "403": { $ref: "#/components/responses/Forbidden" }
@@ -489,6 +523,7 @@ components:
       scheme: bearer
  
   schemas:
+    #USER AND PROFILE
     UserID:
       title: UserID
       description: Unique numeric id of the user
@@ -497,6 +532,7 @@ components:
       minimum: 0
       maximum: 9999999999999
       readOnly: true
+    
     Username:
       title: Username
       description: The username of the user
@@ -505,6 +541,7 @@ components:
       example: "Spazio_99"
       minLength: 3
       maxLength: 16
+    
     User:
       title: User
       description: A user
@@ -512,6 +549,7 @@ components:
       properties:
         user_id: { $ref: "#/components/schemas/UserID" }
         username: { $ref: "#/components/schemas/Username" }
+    
     Profile:
       title: Profile
       description: The profile of the user with all his post and other info
@@ -536,12 +574,55 @@ components:
           example: 27
           minimum: 0
           maximum: 99999999999
+        follow_check:
+          type: boolean
+          description: True if the user is followed by the logged user
+          example: true
+
+    UsersList:
+      title: UserList
+      description: List of users
+      type: array
+      items: { $ref: "#/components/schemas/User" }
+      minItems: 0
+      maxItems: 9999
+
+    #TIMESTAMP
+    TimeStamp:
+      title: TimeStamp
+      description: Describe a time in the YY-MM-DD HH:MM:SS format
+      type: string
+      format: date-time
+      pattern: ^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$
+      example: "2023-11-12T14:59:37Z"
+      minLength: 20
+      maxLength: 20
+
+    #POST AND IMAGE  
+    PostID:
+      title: PostID
+      description: Unique numeric id of the post
+      type: integer
+      example: 41
+      minimum: 0
+      maximum: 99999999
+      readOnly: true
+
+    Image:
+      title: Image
+      description: A image represented in base64
+      type: string
+      format: byte
+      minLength: 0
+      maxLength: 1000000000  
+
     Post:
       title: Post
       description: A pubblication of a picture of a user on his own profile
       type: object
       properties:
         image: { $ref: "#/components/schemas/Image" }
+        post_id: { $ref: "#/components/schemas/PostID" }
         likes_count:
           description: Number of likes of the post
           type: integer
@@ -554,55 +635,56 @@ components:
           example: 666
           minimum: 0
           maximum: 99999999999
+        like_check:
+          type: boolean
+          description: True if the post is liked by the logged user
+          example: true
+        timestamp: { $ref: "#/components/schemas/TimeStamp" }
+    
     PostsList:
       title: PostsList
       description: List of posts
       type: array
       items: { $ref: "#/components/schemas/Post" }
       minItems: 0
-      maxItems: 999999999
-    PostsListObject:
-      title: PostListObject
-      description: Object of post list
-      type: object
-      properties:
-        posts_list: { $ref: "#/components/schemas/PostsList" }
-    Image:
-      title: Image
-      description: A image represented in base64
-      type: string
-      format: byte
-      minLength: 0
-      maxLength: 1000000000
-    TimeStamp:
-      title: TimeStamp
-      description: Describe a time in the YY-MM-DD HH:MM:SS format
-      type: string
-      format: date-time
-      pattern: ^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$
-      example: "2023-11-12T14:59:37Z"
-      minLength: 20
-      maxLength: 20
-    PostID:
-      title: PostID
-      description: Unique numeric id of the post
+      maxItems: 9999999
+    
+    #COMMENT
+    CommentID:
+      title: CommentID
+      description: The numeric id of the comment for a post
       type: integer
-      example: 41
-      minimum: 0
-      maximum: 9999999999999999
-    UsersList:
-      title: UserList
-      description: List of users
-      type: array
-      items: { $ref: "#/components/schemas/User" }
-      minItems: 0
-      maxItems: 9999
-    UsersListObject:
-      title: UsersListObject
-      description: Object of users list
+      example: 58
+      minimum: 1
+      maximum: 9999999
+      readOnly: true
+
+    Comment:
+      title: Comment
+      description: Comment of the post
       type: object
       properties:
-        users_list: { $ref: "#/components/schemas/UsersList" }
+        comment_id: { $ref: "#/components/schemas/CommentID" }
+        owner_id: { $ref: "#/components/schemas/UserID" }
+        user: { $ref: "#/components/schemas/User" }
+        text:
+          type: string
+          description: Text of the comment of max 999 characters
+          example: "Yoo! I'm in love with this photo!"
+          pattern: "^.{1,999}$"
+          minLength: 1
+          maxLength: 999
+        timestamp: { $ref: "#/components/schemas/TimeStamp" }
+    
+    CommentsList:
+      title: CommentList
+      description: The list of comments of a post
+      type: array
+      items: { $ref: "#/components/schemas/Comment" }
+      minItems: 0
+      maxItems: 99999
+
+    #AUTHORIZATION
     AuthUser:
       title: AuthUser
       description: The authorization code for a user is his user_id.
@@ -619,6 +701,7 @@ components:
       example: { "user_id": 5370, "auth_code": 5370 }
 
   responses:
+
     #400
     BadRequest:
       description: |-
@@ -631,6 +714,7 @@ components:
             example: "Bad Request, maybe sintax error"
             minLength: 5
             maxLength: 100
+
     #401
     Unauthorized:
       description: |-
@@ -643,6 +727,7 @@ components:
             example: "Unauthorized"
             minLength: 5
             maxLength: 100
+
     #403
     Forbidden:
       description: |-
@@ -655,6 +740,7 @@ components:
             example: "Forbidden"
             minLength: 5
             maxLength: 100
+
     #500
     InternalServerError:
       description: |-
@@ -667,6 +753,7 @@ components:
             example: "Internal Server Error"
             minLength: 5
             maxLength: 100
+
     #503
     ServiceUnavailable:
       description: |-

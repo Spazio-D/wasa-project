@@ -4,3 +4,7 @@ Cancellare like e commenti a tutti e due gli user
 
 ----"Spazio-D/wasa-project/service/api/banUser.go"----
 Chiamare la create-ban
+
+
+----"Spazio-D/wasa-project/service/database/get-stream.go"----
+aggiungere query per like_check 

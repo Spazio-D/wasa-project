@@ -61,7 +61,7 @@ func (post *Post) DatabaseConversion() database.Post {
 
 // Convert the post from database struct to api struct
 func (post *Post) ApiConversion(dbPost database.Post) error {
-	image, err := utils.Base64(dbPost.GetPaht())
+	image, err := utils.Base64(dbPost.GetPath())
 	if err != nil {
 		return err
 	}
@@ -99,4 +99,32 @@ func (profile *Profile) ApiConversion(dbProfile database.Profile) error {
 	profile.FollowCheck = dbProfile.FollowCheck
 
 	return nil
+}
+
+// COMMENT STRUCT AND METHODS
+type Comment struct {
+	ID        int       `json:"id"`
+	PostID    int       `json:"postID"`
+	OwnerID   int       `json:"ownerID"`
+	User      User      `json:"user"`
+	Text      string    `json:"text"`
+	Timestamp time.Time `json:"timestamp"`
+}
+
+func (comment *Comment) ApiConversion(dbComment database.Comment) error {
+	var user User
+	user.ApiConversion(dbComment.User)
+
+	comment.ID = dbComment.ID
+	comment.PostID = dbComment.PostID
+	comment.OwnerID = dbComment.OwnerID
+	comment.User = user
+	comment.Text = dbComment.Text
+	comment.Timestamp = dbComment.Timestamp
+
+	return nil
+}
+
+func (comment *Comment) IsValid() bool {
+	return regexp.MustCompile(`^.{1,999}$`).MatchString(comment.Text)
 }

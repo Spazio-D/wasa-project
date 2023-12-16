@@ -40,7 +40,7 @@ func (db *appdbimpl) GetPosts(user User, offset int, limit int) ([]Post, error) 
 			return nil, err
 		}
 
-		post.ImageUrl = post.GetPaht()
+		post.ImageUrl = post.GetPath()
 		posts = append(posts, post)
 	}
 

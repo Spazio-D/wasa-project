@@ -21,7 +21,7 @@ type Post struct {
 }
 
 // Get the path of the post
-func (post *Post) GetPaht() string {
+func (post *Post) GetPath() string {
 	return "./users/" + post.User.Username + "_" + fmt.Sprint(post.User.ID) + "/posts/" + fmt.Sprint(post.ID) + ".jpeg"
 }
 
@@ -35,7 +35,7 @@ type Profile struct {
 
 type Comment struct {
 	ID        int       `json:"id"`
-	PostID    Post      `json:"postID"`
+	PostID    int       `json:"postID"`
 	OwnerID   int       `json:"ownerID"`
 	User      User      `json:"user"`
 	Text      string    `json:"text"`

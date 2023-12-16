@@ -31,6 +31,24 @@ func (rt *_router) Handler() http.Handler {
 	// GET USER PROFILE
 	rt.router.GET("/users/:user_id/", rt.wrap(rt.getUserProfile))
 
+	// GET USER STREAM
+	rt.router.GET("/users/:user_id/stream", rt.wrap(rt.getMyStream))
+
+	// LIKE A POST
+	rt.router.PUT("/users/:liked_id/posts/:post_id/likes/:user_id", rt.wrap(rt.likePhoto))
+
+	// UNLIKE A POST
+	rt.router.DELETE("/users/:liked_id/posts/:post_id/likes/:user_id", rt.wrap(rt.unlikePhoto))
+
+	// COMMENT A POST
+	rt.router.POST("/users/:commented_id/posts/:post_id/comments", rt.wrap(rt.commentPhoto))
+
+	// UNCOMMENT A POST
+	rt.router.DELETE("/users/:commented_id/posts/:post_id/comments/:comment_id", rt.wrap(rt.uncommentPhoto))
+
+	// DELETE A POST
+	rt.router.DELETE("/users/:user_id/posts/:post_id", rt.wrap(rt.deletePhoto))
+
 	// Special routes
 	rt.router.GET("/liveness", rt.liveness)
 

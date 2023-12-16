@@ -84,6 +84,24 @@ type AppDatabase interface {
 	//Get the profile of a user
 	GetUserProfile(targetUserID int, askingUserID int) (Profile, error)
 
+	//Get the stream of a user
+	GetStream(userID int) ([]Post, error)
+
+	//Create a like
+	CreateLike(userID int, ownerID int, postID int) error
+
+	//Delete a like
+	DeleteLike(userID int, ownerID int, postID int) error
+
+	//Create a comment
+	CreateComment(userID int, ownerID, postID int, text string) (Comment, error)
+
+	//Delete a comment
+	DeleteComment(userID int, postID int, commentID int) error
+
+	//Delete a post
+	DeletePost(postID int, userID int) error
+
 	Ping() error
 }
 

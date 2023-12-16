@@ -105,7 +105,8 @@ paths:
         "500": { $ref: "#/components/responses/InternalServerError" }
         "503": { $ref: "#/components/responses/ServiceUnavailable" }
 
-  #MAKE POST              
+  #MAKE POST 
+  #GET POST             
   /users/{user_id}/posts:
     parameters:
       - name: user_id
@@ -143,6 +144,26 @@ paths:
                 properties:
                   post: { $ref: "#/components/schemas/Post" }
                   time: { $ref: "#/components/schemas/TimeStamp" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/Unauthorized" }
+        "403": { $ref: "#/components/responses/Forbidden" }
+        "500": { $ref: "#/components/responses/InternalServerError" }
+        "503": { $ref: "#/components/responses/ServiceUnavailable" }
+
+    get:
+      tags: ["Post"]
+      description: Get posts of the user
+      summary: Get posts
+      operationId: getPosts
+      responses:
+        "200":
+          description: Posts got successfully
+          content:
+            text/plain:
+              schema:
+                description: Request success
+                type: string
+                example: "Action successfully completed"
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/Unauthorized" }
         "403": { $ref: "#/components/responses/Forbidden" }

@@ -31,13 +31,13 @@ func (rt *_router) unbanUser(w http.ResponseWriter, r *http.Request, ps httprout
 		return
 	}
 
-	checkBan, err := rt.db.IsBanned(userID, targetUserID)
+	banCheck, err := rt.db.IsBanned(userID, targetUserID)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("Error checking for ban")
 		http.Error(w, "Internal Server Error"+err.Error(), http.StatusInternalServerError)
 		return
 	}
-	if !checkBan {
+	if !banCheck {
 		http.Error(w, "Bad Request, user not banned", http.StatusBadRequest)
 		return
 	}

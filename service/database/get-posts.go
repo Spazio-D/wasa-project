@@ -6,11 +6,12 @@ import (
 )
 
 var query_get_posts = `SELECT id, timestamp FROM Post WHERE user_id = ? ORDER BY timestamp DESC LIMIT ?, ?`
-var query_get_likes_count = `SELECT COUNT(postID) FROM Like WHERE postID=? AND ownerID=?`
-var query_get_comments_count = `SELECT COUNT(postID) FROM Comment WHERE postID=? AND ownerID=?`
+var query_get_likes_count = `SELECT COUNT(post_id) FROM Like WHERE post_id = ? AND owner_id = ?`
+var query_get_comments_count = `SELECT COUNT(post_id) FROM Comment WHERE post_id = ? AND owner_id = ?`
+var query_like_check = `SELECT COUNT(post_id) FROM Like WHERE post_id = ? AND owner_id = ? AND user_id = ?`
 
-func (db *appdbimpl) GetPosts(user User, offset int, limit int) ([]Post, error) {
-	rows, err := db.c.Query(query_get_posts, user.ID, offset, limit)
+func (db *appdbimpl) GetPosts(userID int, owner User, offset int, limit int) ([]Post, error) {
+	rows, err := db.c.Query(query_get_posts, owner.ID, offset, limit)
 	if err != nil {
 		return nil, err
 	}
@@ -20,7 +21,7 @@ func (db *appdbimpl) GetPosts(user User, offset int, limit int) ([]Post, error) 
 
 	for rows.Next() {
 		var post Post
-		post.User = user
+		post.User = owner
 		err = rows.Scan(&post.ID, &post.Timestamp)
 		if err != nil {
 			return nil, err
@@ -38,6 +39,16 @@ func (db *appdbimpl) GetPosts(user User, offset int, limit int) ([]Post, error) 
 			post.LikesCount = 0
 		} else if err != nil {
 			return nil, err
+		}
+
+		var likeCheck int
+		err = db.c.QueryRow(query_like_check, post.ID, post.User.ID, userID).Scan(&likeCheck)
+		if errors.Is(err, sql.ErrNoRows) {
+			post.LikeCheck = false
+		} else if err != nil {
+			return nil, err
+		} else {
+			post.LikeCheck = true
 		}
 
 		post.ImageUrl = post.GetPath()

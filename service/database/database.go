@@ -102,6 +102,9 @@ type AppDatabase interface {
 	//Delete a post
 	DeletePost(postID int, userID int) error
 
+	//Get the posts of a user
+	GetPosts(userID int, owner User, offset int, limit int) ([]Post, error)
+
 	Ping() error
 }
 

@@ -8,3 +8,12 @@ Chiamare la create-ban
 
 ----"Spazio-D/wasa-project/service/database/get-stream.go"----
 aggiungere query per like_check 
+
+
+------------------------------------------
+aggiungere search user
+
+
+--------------------------------------------
+Fare un check generale per vedere se sono state implementate tutte le funzionalità
+check API e check PDF WASA

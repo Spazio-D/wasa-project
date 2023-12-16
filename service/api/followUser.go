@@ -31,30 +31,30 @@ func (rt *_router) followUser(w http.ResponseWriter, r *http.Request, ps httprou
 		return
 	}
 
-	checkFollow, err := rt.db.IsFollowing(followerID, followedID)
+	followCheck, err := rt.db.IsFollowing(followerID, followedID)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("Error checking if user is following")
 		http.Error(w, "Internal Server Error"+err.Error(), http.StatusInternalServerError)
 		return
 	}
-	if checkFollow {
+	if followCheck {
 		http.Error(w, "Bad Request, already following", http.StatusBadRequest)
 		return
 	}
 
-	checkBan1, err := rt.db.IsBanned(followerID, followedID)
+	banCheck1, err := rt.db.IsBanned(followerID, followedID)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("Error checking for ban")
 		http.Error(w, "Internal Server Error"+err.Error(), http.StatusInternalServerError)
 		return
 	}
-	checkBan2, err := rt.db.IsBanned(followedID, followerID)
+	banCheck2, err := rt.db.IsBanned(followedID, followerID)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("Error checking for ban")
 		http.Error(w, "Internal Server Error"+err.Error(), http.StatusInternalServerError)
 		return
 	}
-	if checkBan1 || checkBan2 {
+	if banCheck1 || banCheck2 {
 		http.Error(w, "Bad Request, user already banned", http.StatusBadRequest)
 		return
 	}

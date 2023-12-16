@@ -33,7 +33,7 @@ func (db *appdbimpl) CreatePost(post Post, data []byte) (Post, error) {
 	}
 
 	user := post.User
-	posts, err := db.GetPosts(user, 0, 1)
+	posts, err := db.GetPosts(user.ID, user, 0, 1)
 	if err != nil {
 		return post, err
 	}

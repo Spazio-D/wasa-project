@@ -17,10 +17,10 @@ func (rt *_router) Handler() http.Handler {
 	rt.router.POST("/users/:user_id/posts", rt.wrap(rt.uploadPhoto))
 
 	// FOLLOW A USER
-	rt.router.PUT("/users/:follower_id/follows/followed_id", rt.wrap(rt.followUser))
+	rt.router.PUT("/users/:user_id/follows/:followed_id", rt.wrap(rt.followUser))
 
 	// UNFOLLOW A USER
-	rt.router.DELETE("/users/:follower_id/follows/followed_id", rt.wrap(rt.unfollowUser))
+	rt.router.DELETE("/users/:user_id/follows/:followed_id", rt.wrap(rt.unfollowUser))
 
 	// BAN A USER
 	rt.router.PUT("/users/:user_id/banned/:target_user_id", rt.wrap(rt.banUser))
@@ -29,22 +29,22 @@ func (rt *_router) Handler() http.Handler {
 	rt.router.DELETE("/users/:user_id/banned/:target_user_id", rt.wrap(rt.unbanUser))
 
 	// GET USER PROFILE
-	rt.router.GET("/users/:user_id/", rt.wrap(rt.getUserProfile))
+	rt.router.GET("/users/:user_id", rt.wrap(rt.getUserProfile))
 
 	// GET USER STREAM
 	rt.router.GET("/users/:user_id/stream", rt.wrap(rt.getMyStream))
 
 	// LIKE A POST
-	rt.router.PUT("/users/:liked_id/posts/:post_id/likes/:user_id", rt.wrap(rt.likePhoto))
+	rt.router.PUT("/users/:user_id/posts/:post_id/likes/:user_id", rt.wrap(rt.likePhoto))
 
 	// UNLIKE A POST
-	rt.router.DELETE("/users/:liked_id/posts/:post_id/likes/:user_id", rt.wrap(rt.unlikePhoto))
+	rt.router.DELETE("/users/:user_id/posts/:post_id/likes/:user_id", rt.wrap(rt.unlikePhoto))
 
 	// COMMENT A POST
-	rt.router.POST("/users/:commented_id/posts/:post_id/comments", rt.wrap(rt.commentPhoto))
+	rt.router.POST("/users/:user_id/posts/:post_id/comments", rt.wrap(rt.commentPhoto))
 
 	// UNCOMMENT A POST
-	rt.router.DELETE("/users/:commented_id/posts/:post_id/comments/:comment_id", rt.wrap(rt.uncommentPhoto))
+	rt.router.DELETE("/users/:user_id/posts/:post_id/comments/:comment_id", rt.wrap(rt.uncommentPhoto))
 
 	// DELETE A POST
 	rt.router.DELETE("/users/:user_id/posts/:post_id", rt.wrap(rt.deletePhoto))

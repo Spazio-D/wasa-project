@@ -1,12 +1,8 @@
-GET http://0.0.0.0:3000/ HTTP/1.1
-Content-Type: text/plain
-
-###
-
-POST http://localhost:3000/login HTTP/1.1
+#DoLogin -- CREAZIONE E ACCESSO UTENTE 
+POST http://localhost:3000/session HTTP/1.1
 Content-Type: application/json
 
 {
-    "username": "ciao",
-    "name": "fracnesco"
+    "username": "Lokki"
 }
+

@@ -8,7 +8,7 @@ var userTable = `CREATE TABLE IF NOT EXISTS User
 	PRIMARY KEY(id)
 );`
 
-var postTable = `CREATE TABLE IF NOT EXIST Post 
+var postTable = `CREATE TABLE IF NOT EXISTS Post 
 (
 	id INTEGER NOT NULL,
 	user_id INTEGER NOT NULL,

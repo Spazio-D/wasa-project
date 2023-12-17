@@ -172,9 +172,9 @@ paths:
 
   #FOLLOW USER
   #UNFOLLOW USER
-  /users/{follower_id}/follows/{followed_id}:
+  /users/{user_id}/follows/{followed_id}:
     parameters:
-      - name: follower_id
+      - name: user_id
         in: path
         description: The user id of the user who wants to follow
         schema: { $ref: "#/components/schemas/UserID" }
@@ -189,8 +189,7 @@ paths:
       tags: ["User"]
       summary: Follow a user
       operationId: followUser
-      description: |-
-        The user with follower_id start to follow the one with followed_id.
+      description: The user with user_id start to follow the one with followed_id.
       responses:
         "200":
           description: User followed successfully
@@ -211,7 +210,7 @@ paths:
       summary: Unfollow a user
       operationId: unfollowUser
       description: |-
-        The user with follower_id no longer follow the one with followed_id.
+        The user with user_id no longer follow the one with followed_id.
       responses:
         "200":
           description: User unfollowed successfully
@@ -342,9 +341,9 @@ paths:
 
   #LIKE POST
   #UNLIKE POST
-  /users/{liked_id}/posts/{post_id}/likes/{user_id}:
+  /users/{user_id}/posts/{post_id}/likes/{user_id}:
     parameters: 
-      - name: liked_id
+      - name: user_id
         in: path
         description: The user id of the post owner
         schema: { $ref: "#/components/schemas/UserID" }
@@ -401,9 +400,9 @@ paths:
         "503": { $ref: "#/components/responses/ServiceUnavailable" }
 
   #COMMENT POST
-  /users/{commented_id}/posts/{post_id}/comments:
+  /users/{user_id}/posts/{post_id}/comments:
     parameters: 
-      - name: commented_id
+      - name: user_id
         in: path
         description: The user id of the post owner
         schema: { $ref: "#/components/schemas/UserID" }
@@ -436,9 +435,9 @@ paths:
         "503": { $ref: "#/components/responses/ServiceUnavailable" }
     
   #UNCOMMENT POST
-  /users/{commented_id}/posts/{post_id}/comments/{comment_id}:
+  /users/{user_id}/posts/{post_id}/comments/{comment_id}:
     parameters: 
-      - name: commented_id
+      - name: user_id
         in: path
         description: The user id of the post owner
         schema: { $ref: "#/components/schemas/UserID" }

@@ -105,6 +105,9 @@ type AppDatabase interface {
 	//Get the posts of a user
 	GetPosts(userID int, owner User, offset int, limit int) ([]Post, error)
 
+	//Get users matching the username
+	SearchUsers(userID int, username string) ([]User, error)
+
 	Ping() error
 }
 

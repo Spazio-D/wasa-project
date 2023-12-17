@@ -52,6 +52,9 @@ func (rt *_router) Handler() http.Handler {
 	// GET POSTS
 	rt.router.GET("/users/:user_id/posts", rt.wrap(rt.getPosts))
 
+	// SEARCH USERS
+	rt.router.GET("/users", rt.wrap(rt.searchUsers))
+
 	// Special routes
 	rt.router.GET("/liveness", rt.liveness)
 

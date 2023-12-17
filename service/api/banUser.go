@@ -42,5 +42,12 @@ func (rt *_router) banUser(w http.ResponseWriter, r *http.Request, ps httprouter
 		return
 	}
 
+	err = rt.db.CreateBan(userID, targetUserID)
+	if err != nil {
+		ctx.Logger.WithError(err).Error("Error creating ban")
+		http.Error(w, "Internal Server Error"+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
 	w.WriteHeader(http.StatusOK)
 }

@@ -40,7 +40,7 @@ var likeTable = `CREATE TABLE IF NOT EXISTS Like
 	owner_id INTEGER NOT NULL,
 	timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
 	PRIMARY KEY(user_id, post_id, owner_id),
-	FOREIGN KEY(post_id, owner_id) REFERENCES Post(id, owner_id)
+	FOREIGN KEY(post_id, owner_id) REFERENCES Post(id, user_id)
 		ON DELETE CASCADE,
 	FOREIGN KEY(user_id) REFERENCES User(id)
 		ON DELETE CASCADE
@@ -67,3 +67,4 @@ var banTable = `CREATE TABLE IF NOT EXISTS Ban
 	FOREIGN KEY (banned_id) REFERENCES User(userID)
 		ON DELETE CASCADE
 );`
+

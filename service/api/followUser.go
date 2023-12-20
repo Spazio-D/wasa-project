@@ -27,14 +27,14 @@ func (rt *_router) followUser(w http.ResponseWriter, r *http.Request, ps httprou
 	}
 
 	if followerID == followedID {
-		http.Error(w, "Bad Request", http.StatusBadRequest)
+		http.Error(w, "Bad Request, users can't follow themselves", http.StatusBadRequest)
 		return
 	}
 
 	followCheck, err := rt.db.IsFollowing(followerID, followedID)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("Error checking if user is following")
-		http.Error(w, "Internal Server Error"+err.Error(), http.StatusInternalServerError)
+		http.Error(w, "Internal Server Error "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 	if followCheck {
@@ -51,11 +51,11 @@ func (rt *_router) followUser(w http.ResponseWriter, r *http.Request, ps httprou
 	banCheck2, err := rt.db.IsBanned(followedID, followerID)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("Error checking for ban")
-		http.Error(w, "Internal Server Error"+err.Error(), http.StatusInternalServerError)
+		http.Error(w, "Internal Server Error "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 	if banCheck1 || banCheck2 {
-		http.Error(w, "Bad Request, user already banned", http.StatusBadRequest)
+		http.Error(w, "Forbidden, user banned", http.StatusForbidden)
 		return
 	}
 

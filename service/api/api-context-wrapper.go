@@ -3,6 +3,7 @@ package api
 import (
 	"Spazio-D/wasa-project/service/api/reqcontext"
 	"net/http"
+	"strconv"
 
 	"github.com/gofrs/uuid"
 	"github.com/julienschmidt/httprouter"
@@ -14,7 +15,7 @@ import (
 type httpRouterHandler func(http.ResponseWriter, *http.Request, httprouter.Params, reqcontext.RequestContext)
 
 // wrap parses the request and adds a reqcontext.RequestContext instance related to the request.
-func (rt *_router) wrap(fn httpRouterHandler) func(http.ResponseWriter, *http.Request, httprouter.Params) {
+func (rt *_router) wrap(fn httpRouterHandler, auth bool) func(http.ResponseWriter, *http.Request, httprouter.Params) {
 	return func(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		reqUUID, err := uuid.NewV4()
 		if err != nil {
@@ -22,8 +23,19 @@ func (rt *_router) wrap(fn httpRouterHandler) func(http.ResponseWriter, *http.Re
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
+
+		token := 0
+		if auth {
+			token, err = strconv.Atoi(r.Header.Get("Auth"))
+			if err != nil {
+				http.Error(w, "Unauthorized", http.StatusUnauthorized)
+				return
+			}
+		}
+
 		var ctx = reqcontext.RequestContext{
 			ReqUUID: reqUUID,
+			UserID:  token,
 		}
 
 		// Create a request-specific logger

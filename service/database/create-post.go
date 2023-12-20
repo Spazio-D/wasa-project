@@ -3,22 +3,22 @@ package database
 import (
 	"Spazio-D/wasa-project/service/api/utils"
 	"database/sql"
-	"errors"
 	"os"
 )
 
 var query_max_post_id = `SELECT MAX(id) FROM Post WHERE user_id = ?`
-var query_create_post = `INSERT INTO Post (id, user_id,) VALUES (?, ?)`
+var query_create_post = `INSERT INTO Post (id, user_id) VALUES (?, ?)`
 
 func (db *appdbimpl) CreatePost(post Post, data []byte) (Post, error) {
-	var id int
+	var id = sql.NullInt64{Int64: 0, Valid: false}
+
 	err := db.c.QueryRow(query_max_post_id, post.User.ID).Scan(&id)
-	if errors.Is(err, sql.ErrNoRows) {
+	if !id.Valid {
 		post.ID = 1
 	} else if err != nil {
 		return post, err
 	} else {
-		post.ID = id + 1
+		post.ID = int(id.Int64) + 1
 	}
 
 	path := post.GetPath()

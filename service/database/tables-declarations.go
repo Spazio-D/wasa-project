@@ -61,10 +61,9 @@ var banTable = `CREATE TABLE IF NOT EXISTS Ban
 (
 	banner_id INTEGER NOT NULL,
 	banned_id INTEGER NOT NULL,
-	PRIMARY KEY(banned_id, banner_id),
+	PRIMARY KEY(banner_id, banned_id),
 	FOREIGN KEY (banner_id) REFERENCES User(userID)
 		ON DELETE CASCADE,
 	FOREIGN KEY (banned_id) REFERENCES User(userID)
 		ON DELETE CASCADE
 );`
-

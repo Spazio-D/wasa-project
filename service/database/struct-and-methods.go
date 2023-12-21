@@ -22,7 +22,7 @@ type Post struct {
 
 // Get the path of the post
 func (post *Post) GetPath() string {
-	return "./users/" + post.User.Username + "_" + fmt.Sprint(post.User.ID) + "/posts/" + fmt.Sprint(post.ID) + ".jpeg"
+	return "./users/" + fmt.Sprint(post.User.ID) + "/posts/" + fmt.Sprint(post.ID) + ".jpeg"
 }
 
 type Profile struct {

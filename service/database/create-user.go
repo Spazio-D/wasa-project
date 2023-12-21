@@ -26,7 +26,7 @@ func (db *appdbimpl) CreateUser(user User) (User, error) {
 		return user, err
 	}
 
-	path := "./users/" + user.Username + "_" + fmt.Sprint(user.ID) + "/posts"
+	path := "./users/" + fmt.Sprint(user.ID) + "/posts"
 	if err := os.MkdirAll(path, os.ModePerm); err != nil {
 		return user, err
 	}

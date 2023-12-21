@@ -13,13 +13,7 @@ func (db *appdbimpl) DeletePost(postID int, userID int) error {
 		return err
 	}
 
-	var user User
-	user, err = db.GetUserByID(userID)
-	if err != nil {
-		return err
-	}
-
-	err = os.Remove("./users/" + user.Username + "_" + fmt.Sprint(userID) + "/posts/" + fmt.Sprint(postID) + ".jpeg")
+	err = os.Remove("./users/" + fmt.Sprint(userID) + "/posts/" + fmt.Sprint(postID) + ".jpeg")
 	if err != nil {
 		return err
 	}

@@ -32,7 +32,12 @@ func (rt *_router) getMyStream(w http.ResponseWriter, r *http.Request, ps httpro
 
 	for i, dbPost := range dbStream {
 		var post Post
-		post.ApiConversion(dbPost)
+		err = post.ApiConversion(dbPost)
+		if err != nil {
+			ctx.Logger.WithError(err).Error("Error converting post")
+			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+			return
+		}
 		posts[i] = post
 	}
 

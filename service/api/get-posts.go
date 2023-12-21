@@ -3,6 +3,7 @@ package api
 import (
 	"Spazio-D/wasa-project/service/api/reqcontext"
 	"Spazio-D/wasa-project/service/database"
+	"database/sql"
 	"encoding/json"
 	"net/http"
 	"strconv"
@@ -22,13 +23,13 @@ func (rt *_router) getPosts(w http.ResponseWriter, r *http.Request, ps httproute
 	banCheck1, err := rt.db.IsBanned(askingUserID, userID)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("Error checking if user is banned")
-		http.Error(w, "Internal Server Error"+err.Error(), http.StatusInternalServerError)
+		http.Error(w, "Internal Server Error "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 	banCheck2, err := rt.db.IsBanned(userID, askingUserID)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("Error checking if user is banned")
-		http.Error(w, "Internal Server Error"+err.Error(), http.StatusInternalServerError)
+		http.Error(w, "Internal Server Error "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -39,9 +40,12 @@ func (rt *_router) getPosts(w http.ResponseWriter, r *http.Request, ps httproute
 
 	var user database.User
 	user, err = rt.db.GetUserByID(userID)
-	if err != nil {
+	if err == sql.ErrNoRows {
+		http.Error(w, "User not exist", http.StatusBadRequest)
+		return
+	} else if err != nil {
 		ctx.Logger.WithError(err).Error("Error getting user")
-		http.Error(w, "Internal Server Error"+err.Error(), http.StatusInternalServerError)
+		http.Error(w, "Internal Server Error "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -56,7 +60,13 @@ func (rt *_router) getPosts(w http.ResponseWriter, r *http.Request, ps httproute
 
 	for i, dbPost := range dbPosts {
 		var post Post
-		post.ApiConversion(dbPost)
+		err = post.ApiConversion(dbPost)
+		if err != nil {
+			ctx.Logger.WithError(err).Error("Error converting post")
+			http.Error(w, "Internal Server Error "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+		
 		posts[i] = post
 	}
 

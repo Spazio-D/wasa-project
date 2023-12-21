@@ -35,10 +35,10 @@ func (rt *_router) Handler() http.Handler {
 	rt.router.GET("/users/:user_id/stream", rt.wrap(rt.getMyStream, true))
 
 	// LIKE A POST
-	rt.router.PUT("/users/:user_id/posts/:post_id/likes/:user_id", rt.wrap(rt.likePhoto, true))
+	rt.router.PUT("/users/:user_id/posts/:post_id/likes/:liker_id", rt.wrap(rt.likePhoto, true))
 
 	// UNLIKE A POST
-	rt.router.DELETE("/users/:user_id/posts/:post_id/likes/:user_id", rt.wrap(rt.unlikePhoto, true))
+	rt.router.DELETE("/users/:user_id/posts/:post_id/likes/:liker_id", rt.wrap(rt.unlikePhoto, true))
 
 	// COMMENT A POST
 	rt.router.POST("/users/:user_id/posts/:post_id/comments", rt.wrap(rt.commentPhoto, true))
@@ -49,7 +49,7 @@ func (rt *_router) Handler() http.Handler {
 	// DELETE A POST
 	rt.router.DELETE("/users/:user_id/posts/:post_id", rt.wrap(rt.deletePhoto, true))
 
-	// GET POSTS
+	// GET USER POSTS
 	rt.router.GET("/users/:user_id/posts", rt.wrap(rt.getPosts, true))
 
 	// SEARCH USERS
@@ -61,4 +61,3 @@ func (rt *_router) Handler() http.Handler {
 	return rt.router
 }
 
-//CIAO AMO TVB SEI  BELLISSIMO

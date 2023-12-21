@@ -341,7 +341,7 @@ paths:
 
   #LIKE POST
   #UNLIKE POST
-  /users/{user_id}/posts/{post_id}/likes/{user_id}:
+  /users/{user_id}/posts/{post_id}/likes/{liker_id}:
     parameters: 
       - name: user_id
         in: path
@@ -353,7 +353,7 @@ paths:
         description: The post id
         schema: { $ref: "#/components/schemas/PostID" }
         required: true
-      - name: user_id
+      - name: liker_id
         in: path
         description: The user id of the user who wants to like or unlike the post
         schema: { $ref: "#/components/schemas/UserID" }

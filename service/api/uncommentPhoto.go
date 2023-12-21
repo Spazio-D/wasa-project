@@ -2,7 +2,8 @@ package api
 
 import (
 	"Spazio-D/wasa-project/service/api/reqcontext"
-	"encoding/json"
+	"Spazio-D/wasa-project/service/database"
+	"database/sql"
 	"net/http"
 	"strconv"
 
@@ -28,11 +29,14 @@ func (rt *_router) uncommentPhoto(w http.ResponseWriter, r *http.Request, ps htt
 		return
 	}
 
-	var comment Comment
-
-	err = json.NewDecoder(r.Body).Decode(&comment)
-	if err != nil {
-		http.Error(w, "Bad Request "+err.Error(), http.StatusBadRequest)
+	var comment database.Comment
+	comment, err = rt.db.GetCommentByID(commentID, commentedID, postID)
+	if err == sql.ErrNoRows {
+		http.Error(w, "Comment not exist", http.StatusBadRequest)
+		return
+	} else if err != nil {
+		ctx.Logger.WithError(err).Error("Error getting comment")
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 

@@ -1,11 +1,11 @@
 package database
 
-var query_get_users = `SELECT id, username FROM User WHERE username regexp ? ORDER BY username`
+var query_get_users = `SELECT id, username FROM User WHERE username LIKE ? ORDER BY username`
 
 func (db *appdbimpl) SearchUsers(userID int, username string) ([]User, error) {
 	var users []User
 
-	rows, err := db.c.Query(query_get_users, "^"+username)
+	rows, err := db.c.Query(query_get_users, username+"%")
 	if err != nil {
 		return nil, err
 	}

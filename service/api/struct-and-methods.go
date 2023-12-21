@@ -88,7 +88,7 @@ type Profile struct {
 	FollowCheck   bool `json:"followCheck"`
 }
 
-func (profile *Profile) ApiConversion(dbProfile database.Profile) error {
+func (profile *Profile) ApiConversion(dbProfile database.Profile) {
 	var user User
 	user.ApiConversion(dbProfile.User)
 
@@ -98,7 +98,6 @@ func (profile *Profile) ApiConversion(dbProfile database.Profile) error {
 	profile.PostsCount = dbProfile.PostsCount
 	profile.FollowCheck = dbProfile.FollowCheck
 
-	return nil
 }
 
 // COMMENT STRUCT AND METHODS
@@ -111,7 +110,7 @@ type Comment struct {
 	Timestamp time.Time `json:"timestamp"`
 }
 
-func (comment *Comment) ApiConversion(dbComment database.Comment) error {
+func (comment *Comment) ApiConversion(dbComment database.Comment) {
 	var user User
 	user.ApiConversion(dbComment.User)
 
@@ -121,8 +120,6 @@ func (comment *Comment) ApiConversion(dbComment database.Comment) error {
 	comment.User = user
 	comment.Text = dbComment.Text
 	comment.Timestamp = dbComment.Timestamp
-
-	return nil
 }
 
 func (comment *Comment) IsValid() bool {

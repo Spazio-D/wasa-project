@@ -2,6 +2,7 @@ package api
 
 import (
 	"Spazio-D/wasa-project/service/api/reqcontext"
+	"database/sql"
 	"encoding/json"
 	"net/http"
 
@@ -12,19 +13,19 @@ func (rt *_router) doLogin(w http.ResponseWriter, r *http.Request, ps httprouter
 
 	var user User
 
-	//Read the body and decode it
+	// Read the body and decode it
 	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
 		http.Error(w, "Bad request "+err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	//Check if the username is valid
+	// Check if the username is valid
 	if !user.IsValid() {
 		http.Error(w, "Invalid username", http.StatusBadRequest)
 		return
 	}
 
-	//Check if the username exist
+	// Check if the username exist
 	exist, err := rt.db.UsernameExist(user.Username)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("Can't check if the username is already taken")
@@ -44,7 +45,10 @@ func (rt *_router) doLogin(w http.ResponseWriter, r *http.Request, ps httprouter
 		w.WriteHeader(http.StatusCreated)
 	} else {
 		dbUser, err := rt.db.GetUserByUsername(user.Username)
-		if err != nil {
+		if err == sql.ErrNoRows {
+			http.Error(w, "User not exist", http.StatusBadRequest)
+			return
+		} else if err != nil {
 			ctx.Logger.WithError(err).Error("Can't get the user")
 			w.WriteHeader(http.StatusInternalServerError)
 			return

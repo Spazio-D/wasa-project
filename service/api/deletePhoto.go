@@ -3,6 +3,7 @@ package api
 import (
 	"Spazio-D/wasa-project/service/api/reqcontext"
 	"net/http"
+	"os"
 	"strconv"
 
 	"github.com/julienschmidt/httprouter"
@@ -28,7 +29,10 @@ func (rt *_router) deletePhoto(w http.ResponseWriter, r *http.Request, ps httpro
 	}
 
 	err = rt.db.DeletePost(postID, UserID)
-	if err != nil {
+	if os.IsNotExist(err) {
+		http.Error(w, "Post not exist", http.StatusBadRequest)
+		return
+	} else if err != nil {
 		ctx.Logger.WithError(err).Error("Error deleting the post")
 		http.Error(w, "Internal Server Error"+err.Error(), http.StatusInternalServerError)
 		return

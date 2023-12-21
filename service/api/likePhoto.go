@@ -21,7 +21,7 @@ func (rt *_router) likePhoto(w http.ResponseWriter, r *http.Request, ps httprout
 		return
 	}
 
-	likerUserID, err := strconv.Atoi(ps.ByName("user_id"))
+	likerUserID, err := strconv.Atoi(ps.ByName("liker_id"))
 	if err != nil {
 		http.Error(w, "Bad Request "+err.Error(), http.StatusBadRequest)
 		return
@@ -30,6 +30,18 @@ func (rt *_router) likePhoto(w http.ResponseWriter, r *http.Request, ps httprout
 	userID := ctx.UserID
 	if userID != likerUserID {
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	likeCheck, err := rt.db.IsLiked(postID, likedUserID, likerUserID)
+	if err != nil {
+		ctx.Logger.WithError(err).Error("Error checking like")
+		http.Error(w, "Internal Server Error ", http.StatusInternalServerError)
+		return
+	}
+
+	if likeCheck {
+		http.Error(w, "Already liked", http.StatusBadRequest)
 		return
 	}
 
@@ -48,7 +60,7 @@ func (rt *_router) likePhoto(w http.ResponseWriter, r *http.Request, ps httprout
 	}
 
 	if banCheck1 || banCheck2 {
-		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		http.Error(w, "Forbidden", http.StatusForbidden)
 		return
 	}
 

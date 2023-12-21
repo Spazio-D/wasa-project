@@ -39,7 +39,7 @@ func (rt *_router) commentPhoto(w http.ResponseWriter, r *http.Request, ps httpr
 	}
 
 	if banCheck1 || banCheck2 {
-		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		http.Error(w, "Forbidden", http.StatusForbidden)
 		return
 	}
 

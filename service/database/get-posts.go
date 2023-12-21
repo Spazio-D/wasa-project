@@ -15,7 +15,6 @@ func (db *appdbimpl) GetPosts(userID int, owner User, offset int, limit int) ([]
 	if err != nil {
 		return nil, err
 	}
-	defer func() { err = rows.Close() }()
 
 	var posts []Post
 
@@ -55,8 +54,10 @@ func (db *appdbimpl) GetPosts(userID int, owner User, offset int, limit int) ([]
 		posts = append(posts, post)
 	}
 
+	defer func() { err = rows.Close() }()
+	
 	if rows.Err() != nil {
-		return posts, err
+		return posts, rows.Err()
 	}
 
 	return posts, nil

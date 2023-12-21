@@ -6,7 +6,7 @@ import (
 )
 
 var get_user_followed = `SELECT id, username FROM User WHERE id IN (SELECT followed_id FROM Follow WHERE follower_id = ?)`
-var query_get_stream = `SELECT User.id, User.username, Post.id, Post.timestamp FROM (` + get_user_followed + `) AS User INNER JOIN Post ON User.id = Post.id ORDER BY Post.timestamp DESC`
+var query_get_stream = `SELECT User.id, User.username, Post.id, Post.timestamp FROM (` + get_user_followed + `) AS User INNER JOIN Post ON User.id = Post.user_id ORDER BY Post.timestamp DESC`
 
 func (db *appdbimpl) GetStream(userID int) ([]Post, error) {
 	var posts []Post
@@ -15,7 +15,6 @@ func (db *appdbimpl) GetStream(userID int) ([]Post, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer func() { err = rows.Close() }()
 
 	for rows.Next() {
 		var user User
@@ -47,6 +46,12 @@ func (db *appdbimpl) GetStream(userID int) ([]Post, error) {
 		post.User = user
 		posts = append(posts, post)
 
+	}
+
+	defer func() { err = rows.Close() }()
+	
+	if rows.Err() != nil {
+		return posts, rows.Err()
 	}
 
 	return posts, nil

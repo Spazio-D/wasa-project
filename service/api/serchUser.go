@@ -18,6 +18,7 @@ func (rt *_router) searchUsers(w http.ResponseWriter, r *http.Request, ps httpro
 
 	dbUsers, err := rt.db.SearchUsers(ctx.UserID, username)
 	if err != nil {
+		ctx.Logger.Error("Error during search ", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}

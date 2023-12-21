@@ -14,7 +14,8 @@ var postTable = `CREATE TABLE IF NOT EXISTS Post
 	user_id INTEGER NOT NULL,
 	timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
 	PRIMARY KEY(id, user_id),
-	FOREIGN KEY(user_id) REFERENCES User(id)
+	CONSTRAINT postFK_user
+		FOREIGN KEY (user_id) REFERENCES User(id)
 		ON DELETE CASCADE
 );`
 
@@ -27,10 +28,12 @@ var commentTable = `CREATE TABLE IF NOT EXISTS Comment
 	text TEXT NOT NULL,
 	timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
 	PRIMARY KEY(id, owner_id, post_id),
-	FOREIGN KEY(post_id, owner_id) REFERENCES Post(id, user_id)
-		ON DELETE CASCADE,
-	FOREIGN KEY(user_id) REFERENCES User(user_id)
-		ON DELETE CASCADE
+	CONSTRAINT commentFK_post
+		FOREIGN KEY (post_id, owner_id) REFERENCES Post(id, user_id)
+			ON DELETE CASCADE,
+	CONSTRAINT commentFK_user
+		FOREIGN KEY (user_id) REFERENCES User(user_id)
+			ON DELETE CASCADE
 );`
 
 var likeTable = `CREATE TABLE IF NOT EXISTS Like
@@ -40,10 +43,12 @@ var likeTable = `CREATE TABLE IF NOT EXISTS Like
 	owner_id INTEGER NOT NULL,
 	timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
 	PRIMARY KEY(user_id, post_id, owner_id),
-	FOREIGN KEY(post_id, owner_id) REFERENCES Post(id, user_id)
-		ON DELETE CASCADE,
-	FOREIGN KEY(user_id) REFERENCES User(id)
-		ON DELETE CASCADE
+	CONSTRAINT likeFK_post
+		FOREIGN KEY (post_id, owner_id) REFERENCES Post(id, user_id)
+			ON DELETE CASCADE,
+	CONSTRAINT likeFK_user
+		FOREIGN KEY (user_id) REFERENCES User(id)
+			ON DELETE CASCADE
 );`
 
 var followTable = `CREATE TABLE IF NOT EXISTS Follow
@@ -51,10 +56,12 @@ var followTable = `CREATE TABLE IF NOT EXISTS Follow
 	follower_id INTEGER NOT NULL,
 	followed_id INTEGER NOT NULL,
 	PRIMARY KEY(follower_id, followed_id),
-	FOREIGN KEY(follower_id) REFERENCES User(id)
-		ON DELETE CASCADE,
-	FOREIGN KEY(followed_id) REFERENCES User(id)
-		ON DELETE CASCADE
+	CONSTRAINT followFK_follower
+		FOREIGN KEY (follower_id) REFERENCES User(id)
+			ON DELETE CASCADE,
+	CONSTRAINT followFK_followed
+		FOREIGN KEY (followed_id) REFERENCES User(id)
+			ON DELETE CASCADE
 );`
 
 var banTable = `CREATE TABLE IF NOT EXISTS Ban
@@ -62,8 +69,10 @@ var banTable = `CREATE TABLE IF NOT EXISTS Ban
 	banner_id INTEGER NOT NULL,
 	banned_id INTEGER NOT NULL,
 	PRIMARY KEY(banner_id, banned_id),
-	FOREIGN KEY (banner_id) REFERENCES User(userID)
-		ON DELETE CASCADE,
-	FOREIGN KEY (banned_id) REFERENCES User(userID)
-		ON DELETE CASCADE
+	CONSTRAINT banFK_banner
+		FOREIGN KEY (banner_id) REFERENCES User(userID)
+			ON DELETE CASCADE,
+	CONSTRAINT banFK_banned
+		FOREIGN KEY (banned_id) REFERENCES User(userID)
+			ON DELETE CASCADE
 );`

@@ -45,68 +45,74 @@ type appdbimpl struct {
 // AppDatabase is the high level interface for the DB
 type AppDatabase interface {
 
-	//Check if the username is in the database
+	// Check if the username is in the database
 	UsernameExist(username string) (bool, error)
 
-	//Create a new user and return it
+	// Create a new user and return it
 	CreateUser(user User) (User, error)
 
-	//Get a user by its username
+	// Get a user by its username
 	GetUserByUsername(username string) (User, error)
 
-	//Change the username of a user
+	// Change the username of a user
 	ChangeUsername(username string, userID int) error
 
-	//Get a user by its id
+	// Get a user by its id
 	GetUserByID(id int) (User, error)
 
-	//Create a new post and return it
+	// Create a new post and return it
 	CreatePost(post Post, data []byte) (Post, error)
 
-	//Return true if the followerID user is following the followedID user
+	// Return true if the followerID user is following the followedID user
 	IsFollowing(followerID int, followedID int) (bool, error)
 
-	//Return true if the bannerID user has banned the bannedID user
+	// Return true if the bannerID user has banned the bannedID user
 	IsBanned(bannerID int, bannedID int) (bool, error)
 
-	//Create a follow relationship between the users
+	// Create a follow relationship between the users
 	CreateFollow(followerID int, followedID int) error
 
-	//Delete a follow relationship between the users
+	// Delete a follow relationship between the users
 	DeleteFollow(followerID int, followedID int) error
 
-	//Create a ban relationship between two users
+	// Create a ban relationship between two users
 	CreateBan(bannerID int, bannedID int) error
 
-	//Delete a ban relationship between two users
+	// Delete a ban relationship between two users
 	DeleteBan(bannerID int, bannedID int) error
 
-	//Get the profile of a user
+	// Get the profile of a user
 	GetUserProfile(targetUserID int, askingUserID int) (Profile, error)
 
-	//Get the stream of a user
+	// Get the stream of a user
 	GetStream(userID int) ([]Post, error)
 
-	//Create a like
+	// Create a like
 	CreateLike(userID int, ownerID int, postID int) error
 
-	//Delete a like
+	// Delete a like
 	DeleteLike(userID int, ownerID int, postID int) error
 
-	//Create a comment
+	// Create a comment
 	CreateComment(userID int, ownerID, postID int, text string) (Comment, error)
 
-	//Delete a comment
+	// Delete a comment
 	DeleteComment(userID int, postID int, commentID int) error
 
-	//Delete a post
+	// Delete a post
 	DeletePost(postID int, userID int) error
 
-	//Get the posts of a user
+	// Get the posts of a user
 	GetPosts(userID int, owner User, offset int, limit int) ([]Post, error)
 
-	//Get users matching the username
+	// Get users matching the username
 	SearchUsers(userID int, username string) ([]User, error)
+
+	// Check if the user has liked the post
+	IsLiked(postID int, ownerID int, userID int) (bool, error)
+
+	// Get a comment by its id
+	GetCommentByID(id int, ownerID int, postID int) (Comment, error)
 
 	Ping() error
 }

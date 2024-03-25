@@ -49,7 +49,7 @@ func (db *appdbimpl) GetStream(userID int) ([]Post, error) {
 	}
 
 	defer func() { err = rows.Close() }()
-	
+
 	if rows.Err() != nil {
 		return posts, rows.Err()
 	}

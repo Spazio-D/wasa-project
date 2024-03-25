@@ -4,6 +4,7 @@ import (
 	"Spazio-D/wasa-project/service/api/reqcontext"
 	"database/sql"
 	"encoding/json"
+	"errors"
 	"io"
 	"net/http"
 	"strconv"
@@ -51,7 +52,7 @@ func (rt *_router) uploadPhoto(w http.ResponseWriter, r *http.Request, ps httpro
 	defer func() { err = file.Close() }()
 
 	dbUser, err := rt.db.GetUserByID(userID)
-	if err == sql.ErrNoRows {
+	if errors.Is(err, sql.ErrNoRows) {
 		http.Error(w, "User not exist", http.StatusBadRequest)
 		return
 	} else if err != nil {

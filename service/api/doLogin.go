@@ -4,6 +4,7 @@ import (
 	"Spazio-D/wasa-project/service/api/reqcontext"
 	"database/sql"
 	"encoding/json"
+	"errors"
 	"net/http"
 
 	"github.com/julienschmidt/httprouter"
@@ -45,7 +46,7 @@ func (rt *_router) doLogin(w http.ResponseWriter, r *http.Request, ps httprouter
 		w.WriteHeader(http.StatusCreated)
 	} else {
 		dbUser, err := rt.db.GetUserByUsername(user.Username)
-		if err == sql.ErrNoRows {
+		if errors.Is(err, sql.ErrNoRows) {
 			http.Error(w, "User not exist", http.StatusBadRequest)
 			return
 		} else if err != nil {

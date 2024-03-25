@@ -5,10 +5,10 @@ import (
 	"Spazio-D/wasa-project/service/database"
 	"database/sql"
 	"encoding/json"
+	"errors"
+	"github.com/julienschmidt/httprouter"
 	"net/http"
 	"strconv"
-
-	"github.com/julienschmidt/httprouter"
 )
 
 func (rt *_router) getPosts(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
@@ -40,7 +40,7 @@ func (rt *_router) getPosts(w http.ResponseWriter, r *http.Request, ps httproute
 
 	var user database.User
 	user, err = rt.db.GetUserByID(userID)
-	if err == sql.ErrNoRows {
+	if errors.Is(err, sql.ErrNoRows) {
 		http.Error(w, "User not exist", http.StatusBadRequest)
 		return
 	} else if err != nil {
@@ -66,7 +66,7 @@ func (rt *_router) getPosts(w http.ResponseWriter, r *http.Request, ps httproute
 			http.Error(w, "Internal Server Error "+err.Error(), http.StatusInternalServerError)
 			return
 		}
-		
+
 		posts[i] = post
 	}
 

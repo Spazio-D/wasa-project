@@ -4,6 +4,7 @@ import (
 	"Spazio-D/wasa-project/service/api/reqcontext"
 	"Spazio-D/wasa-project/service/database"
 	"database/sql"
+	"errors"
 	"net/http"
 	"strconv"
 
@@ -31,7 +32,7 @@ func (rt *_router) uncommentPhoto(w http.ResponseWriter, r *http.Request, ps htt
 
 	var comment database.Comment
 	comment, err = rt.db.GetCommentByID(commentID, commentedID, postID)
-	if err == sql.ErrNoRows {
+	if errors.Is(err, sql.ErrNoRows) {
 		http.Error(w, "Comment not exist", http.StatusBadRequest)
 		return
 	} else if err != nil {

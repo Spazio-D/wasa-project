@@ -55,7 +55,7 @@ func (db *appdbimpl) GetPosts(userID int, owner User, offset int, limit int) ([]
 	}
 
 	defer func() { err = rows.Close() }()
-	
+
 	if rows.Err() != nil {
 		return posts, rows.Err()
 	}

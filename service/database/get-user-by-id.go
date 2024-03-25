@@ -6,6 +6,6 @@ func (db *appdbimpl) GetUserByID(id int) (User, error) {
 
 	var user User
 	err := db.c.QueryRow(query_get_user_by_id, id).Scan(&user.ID, &user.Username)
-	
+
 	return user, err
 }

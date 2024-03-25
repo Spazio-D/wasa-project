@@ -60,4 +60,3 @@ func (rt *_router) Handler() http.Handler {
 
 	return rt.router
 }
-

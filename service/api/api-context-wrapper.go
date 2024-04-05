@@ -28,7 +28,7 @@ func (rt *_router) wrap(fn httpRouterHandler, auth bool) func(http.ResponseWrite
 		if auth {
 			token, err = strconv.Atoi(r.Header.Get("Auth"))
 			if err != nil {
-				http.Error(w, "Unauthorized", http.StatusUnauthorized)
+				http.Error(w, UnauthorizedError, http.StatusUnauthorized)
 				return
 			}
 		}

@@ -5,6 +5,7 @@ export default {
 			errormsg: null,
 			loading: false,
 			some_data: null,
+			ads:10,
 		}
 	},
 	methods: {

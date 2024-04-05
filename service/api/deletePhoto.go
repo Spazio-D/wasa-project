@@ -13,18 +13,18 @@ func (rt *_router) deletePhoto(w http.ResponseWriter, r *http.Request, ps httpro
 
 	UserID, err := strconv.Atoi(ps.ByName("user_id"))
 	if err != nil {
-		http.Error(w, "Bad Request"+err.Error(), http.StatusBadRequest)
+		http.Error(w, BadRequestError+err.Error(), http.StatusBadRequest)
 		return
 	}
 
 	postID, err := strconv.Atoi(ps.ByName("post_id"))
 	if err != nil {
-		http.Error(w, "Bad Request"+err.Error(), http.StatusBadRequest)
+		http.Error(w, BadRequestError+err.Error(), http.StatusBadRequest)
 		return
 	}
 
 	if UserID != ctx.UserID {
-		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		http.Error(w, UnauthorizedError, http.StatusUnauthorized)
 		return
 	}
 
@@ -34,7 +34,7 @@ func (rt *_router) deletePhoto(w http.ResponseWriter, r *http.Request, ps httpro
 		return
 	} else if err != nil {
 		ctx.Logger.WithError(err).Error("Error deleting the post")
-		http.Error(w, "Internal Server Error"+err.Error(), http.StatusInternalServerError)
+		http.Error(w, InternalServerError+err.Error(), http.StatusInternalServerError)
 		return
 	}
 

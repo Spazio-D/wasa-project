@@ -11,30 +11,30 @@ import (
 func (rt *_router) unbanUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	userID, err := strconv.Atoi(ps.ByName("user_id"))
 	if err != nil {
-		http.Error(w, "Bad Request"+err.Error(), http.StatusBadRequest)
+		http.Error(w, BadRequestError+err.Error(), http.StatusBadRequest)
 		return
 	}
 
 	targetUserID, err := strconv.Atoi(ps.ByName("target_user_id"))
 	if err != nil {
-		http.Error(w, "Bad Request"+err.Error(), http.StatusBadRequest)
+		http.Error(w, BadRequestError+err.Error(), http.StatusBadRequest)
 		return
 	}
 
 	if userID != ctx.UserID {
-		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		http.Error(w, UnauthorizedError, http.StatusUnauthorized)
 		return
 	}
 
 	if targetUserID == userID {
-		http.Error(w, "Bad Request", http.StatusBadRequest)
+		http.Error(w, BadRequestError, http.StatusBadRequest)
 		return
 	}
 
 	banCheck, err := rt.db.IsBanned(userID, targetUserID)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("Error checking for ban")
-		http.Error(w, "Internal Server Error"+err.Error(), http.StatusInternalServerError)
+		http.Error(w, InternalServerError+err.Error(), http.StatusInternalServerError)
 		return
 	}
 	if !banCheck {
@@ -45,7 +45,7 @@ func (rt *_router) unbanUser(w http.ResponseWriter, r *http.Request, ps httprout
 	err = rt.db.DeleteBan(userID, targetUserID)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("Error deleting ban")
-		http.Error(w, "Internal Server Error"+err.Error(), http.StatusInternalServerError)
+		http.Error(w, InternalServerError+err.Error(), http.StatusInternalServerError)
 		return
 	}
 

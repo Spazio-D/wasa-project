@@ -12,14 +12,14 @@ import (
 func (rt *_router) searchUsers(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	username := r.URL.Query().Get("username")
 	if !regexp.MustCompile(`^\w{1,16}$`).MatchString(username) {
-		http.Error(w, "Bad Request", http.StatusBadRequest)
+		http.Error(w, BadRequestError, http.StatusBadRequest)
 		return
 	}
 
 	dbUsers, err := rt.db.SearchUsers(ctx.UserID, username)
 	if err != nil {
 		ctx.Logger.Error("Error during search ", err)
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		http.Error(w, InternalServerError, http.StatusInternalServerError)
 		return
 	}
 
@@ -29,7 +29,7 @@ func (rt *_router) searchUsers(w http.ResponseWriter, r *http.Request, ps httpro
 		user.ApiConversion(dbUser)
 		if err != nil {
 			ctx.Logger.Error("Error during conversion ", err)
-			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+			http.Error(w, InternalServerError, http.StatusInternalServerError)
 			return
 		}
 		users[i] = user
@@ -39,7 +39,7 @@ func (rt *_router) searchUsers(w http.ResponseWriter, r *http.Request, ps httpro
 	w.Header().Set("Content-Type", "application/json")
 	if err := json.NewEncoder(w).Encode(users); err != nil {
 		ctx.Logger.Error("Error during encoding ", err)
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		http.Error(w, InternalServerError, http.StatusInternalServerError)
 		return
 	}
 

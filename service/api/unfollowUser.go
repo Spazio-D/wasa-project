@@ -11,30 +11,30 @@ import (
 func (rt *_router) unfollowUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	followerID, err := strconv.Atoi(ps.ByName("user_id"))
 	if err != nil {
-		http.Error(w, "Bad Request"+err.Error(), http.StatusBadRequest)
+		http.Error(w, BadRequestError+err.Error(), http.StatusBadRequest)
 		return
 	}
 
 	followedID, err := strconv.Atoi(ps.ByName("followed_id"))
 	if err != nil {
-		http.Error(w, "Bad Request"+err.Error(), http.StatusBadRequest)
+		http.Error(w, BadRequestError+err.Error(), http.StatusBadRequest)
 		return
 	}
 
 	if followerID != ctx.UserID {
-		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		http.Error(w, UnauthorizedError, http.StatusUnauthorized)
 		return
 	}
 
 	if followerID == followedID {
-		http.Error(w, "Bad Request", http.StatusBadRequest)
+		http.Error(w, BadRequestError, http.StatusBadRequest)
 		return
 	}
 
 	followCheck, err := rt.db.IsFollowing(followerID, followedID)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("Error checking if user is following")
-		http.Error(w, "Internal Server Error"+err.Error(), http.StatusInternalServerError)
+		http.Error(w, InternalServerError+err.Error(), http.StatusInternalServerError)
 		return
 	}
 	if !followCheck {
@@ -45,13 +45,13 @@ func (rt *_router) unfollowUser(w http.ResponseWriter, r *http.Request, ps httpr
 	banCheck1, err := rt.db.IsBanned(followerID, followedID)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("Error checking for ban")
-		http.Error(w, "Internal Server Error"+err.Error(), http.StatusInternalServerError)
+		http.Error(w, InternalServerError+err.Error(), http.StatusInternalServerError)
 		return
 	}
 	banCheck2, err := rt.db.IsBanned(followedID, followerID)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("Error checking for ban")
-		http.Error(w, "Internal Server Error"+err.Error(), http.StatusInternalServerError)
+		http.Error(w, InternalServerError+err.Error(), http.StatusInternalServerError)
 		return
 	}
 	if banCheck1 || banCheck2 {
@@ -62,7 +62,7 @@ func (rt *_router) unfollowUser(w http.ResponseWriter, r *http.Request, ps httpr
 	err = rt.db.DeleteFollow(followerID, followedID)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("Error deleting follow")
-		http.Error(w, "Internal Server Error"+err.Error(), http.StatusInternalServerError)
+		http.Error(w, InternalServerError+err.Error(), http.StatusInternalServerError)
 		return
 	}
 

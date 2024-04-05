@@ -12,13 +12,13 @@ import (
 func (rt *_router) commentPhoto(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	commentedID, err := strconv.Atoi(ps.ByName("user_id"))
 	if err != nil {
-		http.Error(w, "Bad Request "+err.Error(), http.StatusBadRequest)
+		http.Error(w, BadRequestError+err.Error(), http.StatusBadRequest)
 		return
 	}
 
 	postID, err := strconv.Atoi(ps.ByName("post_id"))
 	if err != nil {
-		http.Error(w, "Bad Request "+err.Error(), http.StatusBadRequest)
+		http.Error(w, BadRequestError+err.Error(), http.StatusBadRequest)
 		return
 	}
 
@@ -27,19 +27,19 @@ func (rt *_router) commentPhoto(w http.ResponseWriter, r *http.Request, ps httpr
 	banCheck1, err := rt.db.IsBanned(commentedID, commenterID)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("Error checking ban")
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		http.Error(w, InternalServerError, http.StatusInternalServerError)
 		return
 	}
 
 	banCheck2, err := rt.db.IsBanned(commenterID, commentedID)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("Error checking ban")
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		http.Error(w, InternalServerError, http.StatusInternalServerError)
 		return
 	}
 
 	if banCheck1 || banCheck2 {
-		http.Error(w, "Forbidden", http.StatusForbidden)
+		http.Error(w, ForbiddenError, http.StatusForbidden)
 		return
 	}
 
@@ -47,7 +47,7 @@ func (rt *_router) commentPhoto(w http.ResponseWriter, r *http.Request, ps httpr
 
 	err = json.NewDecoder(r.Body).Decode(&comment)
 	if err != nil {
-		http.Error(w, "Bad Request "+err.Error(), http.StatusBadRequest)
+		http.Error(w, BadRequestError+err.Error(), http.StatusBadRequest)
 		return
 	}
 
@@ -59,7 +59,7 @@ func (rt *_router) commentPhoto(w http.ResponseWriter, r *http.Request, ps httpr
 	dbComment, err := rt.db.CreateComment(commenterID, commentedID, postID, comment.Text)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("Error creating comment")
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		http.Error(w, InternalServerError, http.StatusInternalServerError)
 		return
 	}
 
@@ -70,7 +70,7 @@ func (rt *_router) commentPhoto(w http.ResponseWriter, r *http.Request, ps httpr
 	err = json.NewEncoder(w).Encode(comment)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("Error encoding comment")
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		http.Error(w, InternalServerError, http.StatusInternalServerError)
 		return
 	}
 

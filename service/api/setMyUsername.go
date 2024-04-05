@@ -12,19 +12,19 @@ import (
 func (rt *_router) setMyUserName(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	userID, err := strconv.Atoi(ps.ByName("user_id"))
 	if err != nil {
-		http.Error(w, "Bad Request "+err.Error(), http.StatusBadRequest)
+		http.Error(w, BadRequestError+err.Error(), http.StatusBadRequest)
 		return
 	}
 
 	if userID != ctx.UserID {
-		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		http.Error(w, UnauthorizedError, http.StatusUnauthorized)
 		return
 	}
 
 	var user User
 
 	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
-		http.Error(w, "Bad Request"+err.Error(), http.StatusBadRequest)
+		http.Error(w, BadRequestError+err.Error(), http.StatusBadRequest)
 		return
 	}
 
@@ -35,7 +35,7 @@ func (rt *_router) setMyUserName(w http.ResponseWriter, r *http.Request, ps http
 
 	exist, err := rt.db.UsernameExist(user.Username)
 	if err != nil {
-		http.Error(w, "Internal Server Error"+err.Error(), http.StatusInternalServerError)
+		http.Error(w, InternalServerError+err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -45,7 +45,7 @@ func (rt *_router) setMyUserName(w http.ResponseWriter, r *http.Request, ps http
 	}
 
 	if err := rt.db.ChangeUsername(user.Username, userID); err != nil {
-		http.Error(w, "Internal Server Error"+err.Error(), http.StatusInternalServerError)
+		http.Error(w, InternalServerError+err.Error(), http.StatusInternalServerError)
 		return
 	}
 

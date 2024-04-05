@@ -93,7 +93,7 @@ Auth: 2
 
 ### commentPhoto -- COMMENT A POST
 POST http://localhost:3000/users/1/posts/2/comments HTTP/1.1
-Auth: 2
+#Auth: 2
 Content-Type: application/json
 
 {

@@ -81,11 +81,13 @@ func (post *Post) ApiConversion(dbPost database.Post) error {
 
 // PROFILE STRUCT AND METHODS
 type Profile struct {
-	User          User `json:"user"`
-	FollowerCount int  `json:"followersCount"`
-	FollowedCount int  `json:"followedCount"`
-	PostsCount    int  `json:"postsCount"`
-	FollowCheck   bool `json:"followCheck"`
+	User          User   `json:"user"`
+	FollowerCount int    `json:"followersCount"`
+	Followers     []User `json:"followers"`
+	Followed      []User `json:"followed"`
+	FollowedCount int    `json:"followedCount"`
+	PostsCount    int    `json:"postsCount"`
+	FollowCheck   bool   `json:"followCheck"`
 }
 
 func (profile *Profile) ApiConversion(dbProfile database.Profile) {
@@ -94,7 +96,9 @@ func (profile *Profile) ApiConversion(dbProfile database.Profile) {
 
 	profile.User = user
 	profile.FollowerCount = dbProfile.FollowersCount
+	profile.Followers = make([]User, len(dbProfile.Followers))
 	profile.FollowedCount = dbProfile.FollowedCount
+	profile.Followed = make([]User, len(dbProfile.Followed))
 	profile.PostsCount = dbProfile.PostsCount
 	profile.FollowCheck = dbProfile.FollowCheck
 

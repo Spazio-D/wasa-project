@@ -1,0 +1,220 @@
+.header {
+    margin: 30px;
+    margin-bottom: 50px;
+    /* padding-bottom: 50px; */
+}
+
+.top {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.top h1 {
+    margin-right: 40px;
+    font-size: 2.5em;
+    font-weight: bold;
+}
+
+.header h4 {
+    cursor: pointer;
+}
+
+.empty-msg {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 30%;
+    font-size: 20px;
+}
+
+.top button {
+    padding: 3px 10px;
+    border: none;
+    border-radius: 4px;
+    color: white;
+    cursor: pointer;
+    font-size: 1em;
+}
+
+.follow-btn {
+    background-color: #42b983;
+    margin-right : 20px;
+}
+
+.follow-btn:hover {
+    background-color: #269261;
+}
+
+.ban-btn {
+    background-color: rgb(190, 37, 37);
+}
+.ban-btn:hover {
+    background-color: rgb(147, 27, 27);
+}
+
+.bottom {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    font-size: 1.2em;
+}
+
+.bottom h4 {
+    margin: 0;
+    font-weight: normal;
+    font-size: 20px;
+}
+
+
+.feed {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 400px;
+    margin: 0 auto;
+}
+
+.post-container {
+    border: 1px solid #ddd;
+    margin-bottom: 20px;
+    padding: 15px;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    width: 100%;
+}
+
+.username-container {
+    font-size: 1.2em;
+    font-weight: bold;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.edit {
+    color:black;
+    width: 20px;
+    height: 20px;
+}
+
+.image-container img {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+.likes-container {
+    font-size: 1em;
+    margin-top: 10px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.likes-container span{
+    margin-bottom: 0;
+
+}
+
+.likes-container .date {
+    padding-top:3px;
+    font-size:12px;
+    color:rgb(146, 146, 146);
+}
+
+.like-btn {
+    color:red;
+    background: none;
+    border: none;
+    padding: 5px;
+    line-height: 12px;
+    font-size: 15px;
+}
+.like-btn svg {
+    width: 20px;
+    height: 20px;
+}
+.like-btn.liked {
+    fill: red;
+}
+.like-btn .feather.liked {
+    fill: red;
+    /* Color when liked */
+}
+.comments-container {
+    margin-top: 5px;
+    /* border-top: 1px solid rgb(205, 205, 205); */
+    /* padding-top:15px; */
+}
+
+.comments-container ul {
+    list-style-type: none;
+    padding: 0;
+    margin:0
+}
+
+.comment {
+    /* background-color: #eaeaea; */
+    margin-bottom: 5px;
+    padding: 4px;
+    border-radius: 4px;
+    font-size: 0.9em;
+    border-top: 1px solid rgb(205, 205, 205);
+    
+}
+
+.comment:last-child{
+    /* border-bottom: 1px solid rgb(205, 205, 205); */
+    
+}
+
+.comment small {
+    color: #666;
+}
+
+.comment-top {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.comment-top svg {
+    width: 14px;
+    height: 14px;
+    color: gray;
+}
+
+.comment p {
+    margin: 0;
+}
+
+.comment-input-container {
+    display:flex;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: white;
+}
+.comment-input-container input {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    outline: none;
+    background: none;
+    /* margin-top: 10px; */
+    
+}
+.comment-input-container button {
+    /* padding: 0; */
+    border: none;
+    outline: none;
+    padding: 0 15px;
+    font-weight:500;
+}
+
+
+.comment-input-container input::placeholder {
+    color: #aaa;
+}

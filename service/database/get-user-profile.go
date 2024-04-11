@@ -1,8 +1,13 @@
 package database
 
+import (
+	"database/sql"
+	"errors"
+)
+
 var query_get_user = `SELECT id, username FROM User WHERE id = ?`
-var query_get_followers_count = `SELECT count(followed_id) FROM Follow WHERE follower_id = ?`
-var query_get_followed_count = `SELECT count(follower_id) FROM Follow WHERE followed_id = ?`
+var query_get_followers = `SELECT * FROM Follow WHERE follower_id = ?`
+var query_get_followed = `SELECT * FROM Follow WHERE followed_id = ?`
 var query_get_post_count = `SELECT count(id) FROM Post WHERE user_id = ?`
 var query_follow_check = `SELECT count(followed_id) FROM Follow WHERE followed_id = ? AND follower_id = ?`
 
@@ -13,11 +18,13 @@ func (db *appdbimpl) GetUserProfile(targetUserID int, askingUserID int) (Profile
 		return profile, err
 	}
 
-	if err := db.c.QueryRow(query_get_followers_count, targetUserID).Scan(&profile.FollowersCount); err != nil {
+	err := db.c.QueryRow(query_get_followers, targetUserID).Scan(&profile.Followers)
+	if err != nil && !errors.Is(err, sql.ErrNoRows) {
 		return profile, err
 	}
 
-	if err := db.c.QueryRow(query_get_followed_count, targetUserID).Scan(&profile.FollowedCount); err != nil {
+	err = db.c.QueryRow(query_get_followed, targetUserID).Scan(&profile.Followed)
+	if err != nil && !errors.Is(err, sql.ErrNoRows) {
 		return profile, err
 	}
 
@@ -34,6 +41,9 @@ func (db *appdbimpl) GetUserProfile(targetUserID int, askingUserID int) (Profile
 	} else {
 		profile.FollowCheck = true
 	}
+
+	profile.FollowersCount = len(profile.Followers)
+	profile.FollowedCount = len(profile.Followed)
 
 	return profile, nil
 

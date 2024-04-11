@@ -1,57 +1,52 @@
 <script>
+
+import Post from '../components/Post.vue';
+
 export default {
-	data: function() {
+	data: function () {
 		return {
-			errormsg: null,
-			loading: false,
-			some_data: null,
-			ads:10,
-		}
-	},
-	methods: {
-		async refresh() {
-			this.loading = true;
-			this.errormsg = null;
-			try {
-				let response = await this.$axios.get("/");
-				this.some_data = response.data;
-			} catch (e) {
-				this.errormsg = e.toString();
-			}
-			this.loading = false;
-		},
+			errorMsg: null,
+			feed: null,
+			token : sessionStorage.token,
+		};
 	},
 	mounted() {
-		this.refresh()
-	}
+		if (!sessionStorage.token) {
+			this.$router.push('/');
+			return
+		}
+	},
+	components: { Post }
 }
 </script>
 
 <template>
-	<div>
-		<div
-			class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-			<h1 class="h2">Home page</h1>
-			<div class="btn-toolbar mb-2 mb-md-0">
-				<div class="btn-group me-2">
-					<button type="button" class="btn btn-sm btn-outline-secondary" @click="refresh">
-						Refresh
-					</button>
-					<button type="button" class="btn btn-sm btn-outline-secondary" @click="exportList">
-						Export
-					</button>
-				</div>
-				<div class="btn-group me-2">
-					<button type="button" class="btn btn-sm btn-outline-primary" @click="newItem">
-						New
-					</button>
-				</div>
-			</div>
-		</div>
+    
+    <div v-if="feed != null" style="margin-top: 30px;">
 
-		<ErrorMsg v-if="errormsg" :msg="errormsg"></ErrorMsg>
-	</div>
+        <div class="feed" v-for="post in feed" :key="post.ID">
+            <Post :post="post" :token="this.token"/>
+        </div>
+
+    </div>
+    <div v-else class="empty-msg">
+        <p>There's nothing here, just follow someone :D</p>
+    </div>
 </template>
-
+  
 <style>
+.empty-msg {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 30%;
+    font-size: 20px;
+};
+.feed {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 400px;
+    margin: 0 auto;
+};
 </style>

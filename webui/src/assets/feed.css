@@ -17,7 +17,8 @@
     font-weight: bold;
 }
 
-.header h4 {
+.header h4.followers,
+.header h4.followed {
     cursor: pointer;
 }
 

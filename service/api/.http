@@ -3,7 +3,7 @@ POST http://localhost:3000/session HTTP/1.1
 Content-Type: application/json
 
 {
-    "username": "okki"
+    "username": "ciao"
 }
 
 ### doLogin
@@ -25,7 +25,7 @@ Content-Type: application/json
 
 ### setMyUsername -- MODIFY USERNAME USER
 PUT http://localhost:3000/users/1/username HTTP/1.1
-Auth: 1
+Authorization: 1
 Content-Type: application/json
     
 {
@@ -35,7 +35,7 @@ Content-Type: application/json
 
 ### uploadPhoto -- CREATION POST
 POST http://localhost:3000/users/1/posts HTTP/1.1
-Auth: 1
+Authorization: 1
 Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
 
 ------WebKitFormBoundary7MA4YWxkTrZu0gW
@@ -48,52 +48,52 @@ Content-Type: image/jpeg
 
 ### followUser -- FOLLOW A USER
 PUT http://localhost:3000/users/1/follows/2 HTTP/1.1
-Auth: 1
+Authorization: 1
 
 
 ### followUser
 PUT http://localhost:3000/users/2/follows/1 HTTP/1.1
-Auth: 2
+Authorization: 2
 
 
 ### unfollowUser -- UNFOLLOW A USER
 DELETE http://localhost:3000/users/2/follows/1 HTTP/1.1
-Auth: 2
+Authorization: 2
 
 
 ### banUser -- BAN A USER
 PUT http://localhost:3000/users/2/banned/1 HTTP/1.1
-Auth: 2
+Authorization: 2
 
 
 ### unbanUser -- UNBAN A USER
 DELETE http://localhost:3000/users/2/banned/1 HTTP/1.1
-Auth: 2
+Authorization: 2
 
 
 ### getUserProfile -- GET THE USER PROFILE
 GET http://localhost:3000/users/1 HTTP/1.1
-Auth: 2
+Authorization: 2
 
 
 ### getMyStream -- GET THE STREAM OF THE USER
 GET http://localhost:3000/users/1/stream HTTP/1.1
-Auth: 1
+Authorization: 1
 
 
 ### likePhoto -- LIKE A POST
 PUT http://localhost:3000/users/1/posts/1/likes/1 HTTP/1.1
-Auth: 1
+Authorization: 1
 
 
 ### unlikePhoto -- UNLIKE A POST
 DELETE http://localhost:3000/users/1/posts/1/likes/2 HTTP/1.1
-Auth: 2
+Authorization: 2
 
 
 ### commentPhoto -- COMMENT A POST
 POST http://localhost:3000/users/1/posts/2/comments HTTP/1.1
-#Auth: 2
+#Authorization: 2
 Content-Type: application/json
 
 {
@@ -103,20 +103,20 @@ Content-Type: application/json
 
 ### uncommentPhoto -- UNCOMMENT A POST
 DELETE http://localhost:3000/users/1/posts/1/comments/4 HTTP/1.1
-Auth: 1
+Authorization: 1
 
 
 ### deletePhoto -- DELETE A POST
 DELETE http://localhost:3000/users/1/posts/2 HTTP/1.1
-Auth: 1
+Authorization: 1
 
 
 ### getPosts -- GET THE POSTS OF THE USER
 GET http://localhost:3000/users/1/posts HTTP/1.1
-Auth: 1
+Authorization: 1
 
 
 ### searchUsers -- SEARCH USERS BY USERNAME
 GET http://localhost:3000/users?username=l HTTP/1.1
-Auth: 1
+Authorization: 1
 

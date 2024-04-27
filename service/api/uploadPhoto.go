@@ -3,9 +3,9 @@ package api
 import (
 	"Spazio-D/wasa-project/service/api/reqcontext"
 	"database/sql"
+	"encoding/base64"
 	"encoding/json"
 	"errors"
-	"io"
 	"net/http"
 	"strconv"
 
@@ -24,32 +24,29 @@ func (rt *_router) uploadPhoto(w http.ResponseWriter, r *http.Request, ps httpro
 		return
 	}
 
-	err = r.ParseMultipartForm(30000000)
+	err = r.ParseMultipartForm(32 << 20)
 	if err != nil {
 		http.Error(w, BadRequestError+err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	file, _, err := r.FormFile("image")
+	base64ImageData := r.FormValue("image")
+	if base64ImageData == "" {
+		http.Error(w, BadRequestError+"No image data", http.StatusBadRequest)
+		return
+	}
+
+	file, err := base64.StdEncoding.DecodeString(base64ImageData)
 	if err != nil {
 		http.Error(w, BadRequestError+err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	data, err := io.ReadAll(file)
-	if err != nil {
-		ctx.Logger.WithError(err).Error("Can't read the file")
-		http.Error(w, InternalServerError, http.StatusInternalServerError)
-		return
-	}
-
-	fileType := http.DetectContentType(data)
+	fileType := http.DetectContentType(file)
 	if fileType != "image/jpeg" {
 		http.Error(w, "Bad Request, wrong file format "+err.Error(), http.StatusBadRequest)
 		return
 	}
-
-	defer func() { err = file.Close() }()
 
 	dbUser, err := rt.db.GetUserByID(userID)
 	if errors.Is(err, sql.ErrNoRows) {
@@ -69,7 +66,7 @@ func (rt *_router) uploadPhoto(w http.ResponseWriter, r *http.Request, ps httpro
 	}
 
 	dbPost := post.DatabaseConversion()
-	dbPost, err = rt.db.CreatePost(dbPost, data)
+	dbPost, err = rt.db.CreatePost(dbPost, file)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("Can't create the post")
 		http.Error(w, InternalServerError, http.StatusInternalServerError)

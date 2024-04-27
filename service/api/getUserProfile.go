@@ -10,7 +10,9 @@ import (
 )
 
 func (rt *_router) getUserProfile(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
+	var profile Profile
 	targetUserID, err := strconv.Atoi(ps.ByName("user_id"))
+
 	if err != nil {
 		http.Error(w, BadRequestError+err.Error(), http.StatusBadRequest)
 		return
@@ -25,7 +27,20 @@ func (rt *_router) getUserProfile(w http.ResponseWriter, r *http.Request, ps htt
 		return
 	}
 	if banCheck {
-		http.Error(w, "Bad Request, this user is banned", http.StatusBadRequest)
+		dbUser, err := rt.db.GetUserByID(targetUserID)
+		if err != nil {
+			ctx.Logger.WithError(err).Error("Error getting user profile")
+			http.Error(w, InternalServerError+err.Error(), http.StatusInternalServerError)
+			return
+		}
+		profile.User.ApiConversion(dbUser)
+		profile.IsBanned = true
+		w.WriteHeader(http.StatusOK)
+		w.Header().Set("Content-Type", "application/json")
+		if err := json.NewEncoder(w).Encode(profile); err != nil {
+			ctx.Logger.WithError(err).Error("Error marshaling json")
+			http.Error(w, InternalServerError+err.Error(), http.StatusInternalServerError)
+		}
 		return
 	}
 
@@ -36,7 +51,19 @@ func (rt *_router) getUserProfile(w http.ResponseWriter, r *http.Request, ps htt
 		return
 	}
 	if banCheck {
-		http.Error(w, ForbiddenError, http.StatusForbidden)
+		dbUser, err := rt.db.GetUserByID(targetUserID)
+		if err != nil {
+			ctx.Logger.WithError(err).Error("Error getting user profile")
+			http.Error(w, InternalServerError+err.Error(), http.StatusInternalServerError)
+			return
+		}
+		profile.User.ApiConversion(dbUser)
+		w.WriteHeader(http.StatusOK)
+		w.Header().Set("Content-Type", "application/json")
+		if err := json.NewEncoder(w).Encode(profile); err != nil {
+			ctx.Logger.WithError(err).Error("Error marshaling json")
+			http.Error(w, InternalServerError+err.Error(), http.StatusInternalServerError)
+		}
 		return
 	}
 
@@ -47,7 +74,6 @@ func (rt *_router) getUserProfile(w http.ResponseWriter, r *http.Request, ps htt
 		return
 	}
 
-	var profile Profile
 	profile.ApiConversion(dbUserProfile)
 
 	w.WriteHeader(http.StatusOK)

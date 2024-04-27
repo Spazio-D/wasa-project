@@ -8,7 +8,6 @@ export default {
 		return {
 			searchModalIsVisible: false,
 			isLoggedIn: sessionStorage.token ? true : false,
-			users: [],
 			path: "",
 			
 		}
@@ -42,7 +41,7 @@ export default {
 		<div class="row">
 			<nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse" v-show="isLoggedIn">
 				<div class="position-sticky pt-3 sidebar-sticky">
-					<Modal :show="searchModalIsVisible" @close="handleSearchModalToggle" :users="users">
+					<Modal :show="searchModalIsVisible" @close="handleSearchModalToggle" title="search">
 						<template v-slot:header>
 							<h3>Users</h3>
 						</template>
@@ -114,7 +113,7 @@ export default {
 a{
 	cursor: pointer
 }
-span{
+span, header h1, h2, h3, h4{
 	user-select: none;
 }
 </style>

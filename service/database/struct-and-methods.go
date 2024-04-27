@@ -28,11 +28,12 @@ func (post *Post) GetPath() string {
 type Profile struct {
 	User           User   `json:"user"`
 	FollowersCount int    `json:"followersCount"`
+	FollowedCount  int    `json:"followedCount"`
 	Followers      []User `json:"followers"`
 	Followed       []User `json:"followed"`
-	FollowedCount  int    `json:"followedCount"`
 	PostsCount     int    `json:"postsCount"`
 	FollowCheck    bool   `json:"followCheck"`
+	IsBanned       bool   `json:"isBanned"`
 }
 
 type Comment struct {

@@ -4,22 +4,57 @@ import { RouterLink } from 'vue-router';
 export default {
   props: {
     show: Boolean,
-    title: String,
     users: Array,
+    title: String,
   },
-
   data() {
     return {
-      searchText: '',
-      token: sessionStorage.getItem('token'),
+      searchText: "",
+      errorMsg: "", 
+      usernameValidation: new RegExp('^\\w{0,16}$'),
+      filteredUsers: [],
     };
   },
-  computed: {
-    filteredUsers() {
-      // return []
-      return this.users.filter(user =>
-        user.Name.toLowerCase().includes(this.searchText.toLowerCase())
-      );
+  methods: {
+    closeModal() {
+      this.searchText = "";
+      this.$emit('close');
+    }, 
+    async filterUsers() {
+      this.errorMsg = "";
+      this.filteredUsers = this.users;
+      if (this.searchText.length > 0) {
+        if (this.searchText.length > 16 || !this.usernameValidation.test(this.searchText)) {
+          this.errorMsg = "Invalid username, it can contain only letters and numbers for a maximum of 16 characters.";
+          this.filteredUsers = [];
+          return;
+        }
+        
+        if (this.title === "search") {
+          try {
+            const url = `/users?username=${this.searchText}`;
+            let response = await this.$axios.get(url, { headers: { 'Authorization': `${sessionStorage.token}` } });
+            if (response.data == null) {
+              this.filteredUsers = [];
+              return;
+            }
+            this.filteredUsers = response.data;
+          } catch (e) {
+            this.errorMsg = e.toString();
+            this.filteredUsers = [];
+          }
+        } else {
+          this.filteredUsers = this.users.filter(user => user.username.toLowerCase().includes(this.searchText.toLowerCase()));
+        }
+      }
+    }
+  },
+  watch: {
+    searchText() {
+      this.filterUsers();
+    },
+    show() {
+      this.filteredUsers = this.users;
     }
   },
   components: { RouterLink }
@@ -33,7 +68,7 @@ export default {
         <div class="modal-container">
           <div class="modal-header">
             <slot name="header">default header</slot>
-            <button class="like-btn" @click="$emit('close')">
+            <button class="like-btn" @click="closeModal">
               <svg class="feather">
                 <use href="/feather-sprite-v4.29.0.svg#x" />
               </svg>
@@ -41,34 +76,22 @@ export default {
           </div>
 
           <div class="modal-body">
-            <!-- loop through users and create a RouterLink for each user -->
             <slot name="body">
               <div class="search-input">
+                <ErrorMsg v-if="errorMsg" :msg="errorMsg"></ErrorMsg>
                 <input type="text" v-model="searchText" placeholder="Search" />
               </div>
               <div class="search-results">
-
-
-                <div v-for="user in filteredUsers" :key="user.ID" @click="$emit('close')">
-                  <router-link :to="{ name: 'profile', params: { userId: user.ID } }" replace force>
-                  <!-- <router-link :to="{ name: 'profile', params: { userId: user.ID } }" replace force> -->
+                <div v-for="user in filteredUsers" :key="user.id" @click="closeModal">
+                  <RouterLink :to="'/user/' + user.id" replace force>
                     <div class="user">
-
-                      <p>{{ user.Name }}</p>
+                      <p>{{ user.username }}</p>
                     </div>
-                  </router-link>
-                  <!-- <RouterLink :to="{ name: 'Profile', params: { id:user.ID}}">
-                  <div class="user">
-                    
-                    <h3>{{ user.Name }}</h3>
-                  </div>
-                </RouterLink> -->
+                  </RouterLink> 
                 </div>
               </div>
             </slot>
           </div>
-
-
         </div>
       </div>
     </div>

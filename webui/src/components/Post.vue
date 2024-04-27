@@ -1,16 +1,24 @@
 <script>
 
-function userHasLiked(post, token) {
-    return post.Likes.some(like => like.UserID == token);
-}
-
 export default {
     props: ["post", "token"],
     data: function () {
         return {
-            liked: userHasLiked(this.post, this.token),
+
+            ownerID: this.post.user.id,
+            username: this.post.user.username,
+            postID: this.post.id,
+            isLiked: this.post.likeCheck,
+            image64: this.post.image,
+            likesCount: this.post.likesCount,
+            commentsCount: this.post.commentsCount,
+            timestamp: this.post.timestamp,
+            isOwner: false,
+            errorMsg: "",
+
+            comments: [],
+
             newComment: '',
-            localPost: JSON.parse(JSON.stringify(this.post)),
             url: __API_URL__
         };
     },
@@ -32,7 +40,6 @@ export default {
                 this.$axios.delete("/photos/" + this.post.ID+ "/likes" , { headers: { 'Authorization': this.token } })
                     .then((response) => {
                         console.log(response);
-                        this.localPost.Likes = response.data;
                         this.liked = !this.liked;
                     })
                     .catch((error) => {
@@ -43,7 +50,6 @@ export default {
                 this.$axios.post("/photos/" + this.post.ID+ "/likes", {}, { headers: { 'Authorization': this.token } })
                     .then((response) => {
                         console.log(response);
-                        this.localPost.Likes = response.data;
                         this.liked = !this.liked;
                     })
                     .catch((error) => {
@@ -60,7 +66,6 @@ export default {
             })
                 .then((response) => {
                     console.log(response);
-                    this.localPost.Comments.push(response.data);
                     this.newComment = ''; // Reset comment input
                 })
                 .catch((error) => {
@@ -74,7 +79,6 @@ export default {
             })
                 .then((response) => {
                     console.log(response);
-                    this.localPost.Comments = this.localPost.Comments.filter(comment => comment.ID != id);
                 })
                 .catch((error) => {
                     console.log(error);
@@ -87,18 +91,17 @@ export default {
 <template>
     <div v-if="post != null" class="post-container">
         <div class="username-container">
-            <RouterLink :to="{ path: 'user/' + post.UserID }" replace>
-                {{ post.UserName }}
-                <!-- <p>{{ this.test}}</p> -->
+            <RouterLink :to="{ path: 'user/' + post.user.id }" replace>
+                {{ post.user.username }}
             </RouterLink>
-            <button class="" @click="deleteImage" v-if="post.UserID == this.token">
-                <svg class="feather" :class="this.liked ? 'liked' : ''">
+            <button class="" @click="deleteImage" v-if=isOwner>
+                <svg class="feather" :class="this.liked ? 'liked' : ''" >
                     <use href="/feather-sprite-v4.29.0.svg#trash" />
                 </svg>
             </button>
         </div>
         <div class="image-container">
-            <img :src="this.url + '/images/' + post.FileName" :alt="post.FileName">
+            <img :src="`data:image/jpg;base64,${image64}`">
         </div>
         <div class="likes-container">
             <span>
@@ -107,10 +110,9 @@ export default {
                         <use href="/feather-sprite-v4.29.0.svg#heart" />
                     </svg>
                 </button>
-                {{ this.localPost.Likes.length + ((this.localPost.Likes.length > 1) ? " likes" : " like") }}
+                {{ this.likesCount + ((this.likesCount > 1) ? " likes" : " like") }}
             </span>
             <span class="date">
-                <!--  display the time with month day year and only the hour-->
                 {{ new Date(post.UploadTime).toLocaleString('default', {
                     month: 'long',
                     year: 'numeric',
@@ -118,12 +120,11 @@ export default {
                     day: '2-digit',
                     hour12: true // change to false if you want 24-hour format
                 }) }}
-                <!-- {{ new Date(post.UploadTime).toLocaleDateString()  }} -->
             </span>
         </div>
         <div class="comments-container">
             <ul>
-                <li class="comment" v-for="comment in this.localPost.Comments" :key="comment.ID">
+                <li class="comment" v-for="comment in this.comments" :key="comment.ID">
                     <div class="comment-top">
 
                         <div>

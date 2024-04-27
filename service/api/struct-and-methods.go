@@ -83,11 +83,12 @@ func (post *Post) ApiConversion(dbPost database.Post) error {
 type Profile struct {
 	User          User   `json:"user"`
 	FollowerCount int    `json:"followersCount"`
+	FollowedCount int    `json:"followedCount"`
 	Followers     []User `json:"followers"`
 	Followed      []User `json:"followed"`
-	FollowedCount int    `json:"followedCount"`
 	PostsCount    int    `json:"postsCount"`
 	FollowCheck   bool   `json:"followCheck"`
+	IsBanned      bool   `json:"isBanned"`
 }
 
 func (profile *Profile) ApiConversion(dbProfile database.Profile) {
@@ -97,10 +98,21 @@ func (profile *Profile) ApiConversion(dbProfile database.Profile) {
 	profile.User = user
 	profile.FollowerCount = dbProfile.FollowersCount
 	profile.Followers = make([]User, len(dbProfile.Followers))
+	for i, dbUser := range dbProfile.Followers {
+		var apiUser User
+		apiUser.ApiConversion(dbUser)
+		profile.Followers[i] = apiUser
+	}
 	profile.FollowedCount = dbProfile.FollowedCount
 	profile.Followed = make([]User, len(dbProfile.Followed))
+	for i, dbUser := range dbProfile.Followed {
+		var apiUser User
+		apiUser.ApiConversion(dbUser)
+		profile.Followed[i] = apiUser
+	}
 	profile.PostsCount = dbProfile.PostsCount
 	profile.FollowCheck = dbProfile.FollowCheck
+	profile.IsBanned = dbProfile.IsBanned
 
 }
 

@@ -52,7 +52,7 @@ func (rt *_router) commentPhoto(w http.ResponseWriter, r *http.Request, ps httpr
 	}
 
 	if !comment.IsValid() {
-		http.Error(w, "Bad Request, the comment is invalid", http.StatusBadRequest)
+		http.Error(w, "Bad Request, the comment "+comment.Text+"is invalid", http.StatusBadRequest)
 		return
 	}
 

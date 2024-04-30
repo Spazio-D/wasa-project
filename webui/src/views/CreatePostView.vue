@@ -6,6 +6,7 @@ export default {
             errorMsg: "",
         };
     },
+    emits: ['login-success'],
     methods: {
         async handleFileChange() {
             this.errorMsg = "";
@@ -19,7 +20,6 @@ export default {
                 return
             }
             this.image = await this.convertFileToBase64(file);
-            console.log(this.image);
         },
         async submitPost() {
             if (!this.image) {
@@ -33,9 +33,8 @@ export default {
             try {
                 await this.$axios.post(`users/${sessionStorage.token}/posts`, formData, { headers: {'Authorization': `${sessionStorage.token}`, 'Content-Type': 'multipart/form-data'}});
                 this.$router.push(`user/${sessionStorage.token}`);
-            } catch (error) {
-                console.log(sessionStorage.token);
-                console.error(error);
+            } catch (e) {
+                this.errorMsg = e.toString();
             }
         },
         convertFileToBase64(file) {

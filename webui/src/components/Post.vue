@@ -1,7 +1,8 @@
 <script>
 
 export default {
-    props: ["post", "token"],
+    props: ["post"],
+    emits: ["delete-post"],
     data: function () {
         return {
 
@@ -12,90 +13,75 @@ export default {
             image64: this.post.image,
             likesCount: this.post.likesCount,
             commentsCount: this.post.commentsCount,
+            comments: this.post.comments,
             timestamp: this.post.timestamp,
             isOwner: false,
             errorMsg: "",
-
-            comments: [],
-
             newComment: '',
-            url: __API_URL__
+  
         };
     },
     methods: {
         deleteImage() {
-            window.confirm("Are you sure you want to delete this image?") &&
-                this.$axios.delete("/photos?photoId=" + this.post.ID, { headers: { 'Authorization': this.token } })
-                    .then((response) => {
-                        console.log(response);
-                        this.$emit('delete', this.post.ID);
-                    })
-                    .catch((error) => {
-                        console.log(error);
-                    })
+            window.confirm("Are you sure you want to delete this image?");
+            this.$emit('delete-post', this.postID);
         },
-        toggleLike() {
-            console.log(this.token)
-            if (this.liked) {
-                this.$axios.delete("/photos/" + this.post.ID+ "/likes" , { headers: { 'Authorization': this.token } })
-                    .then((response) => {
-                        console.log(response);
-                        this.liked = !this.liked;
-                    })
-                    .catch((error) => {
-                        console.log(error);
-                    })
+        async toggleLike() {
+            if (this.isLiked) {
+                try{
+                    let _ = await this.$axios.delete(`users/${this.ownerID}/posts/${this.postID}/likes/${sessionStorage.userID}`, { headers: { "Authorization": `${sessionStorage.token}` } });
+                    this.isLiked = false;
+                    this.likesCount--;
+                }catch(e){
+                    this.errorMsg = e.toString();
+                }
             }
             else {
-                this.$axios.post("/photos/" + this.post.ID+ "/likes", {}, { headers: { 'Authorization': this.token } })
-                    .then((response) => {
-                        console.log(response);
-                        this.liked = !this.liked;
-                    })
-                    .catch((error) => {
-                        console.log(error);
-                    })
+                try{
+                    let _ = await this.$axios.put(`users/${this.ownerID}/posts/${this.postID}/likes/${sessionStorage.userID}`, {}, { headers: { "Authorization": `${sessionStorage.token}` } });
+                    this.isLiked = true;
+                    this.likesCount++;
+                }catch(e){
+                    this.errorMsg = e.toString();
+                }
             }
         },
-        submitComment() {
-            const payload = {
-                comment: this.newComment
-            };
-            this.$axios.post('/comments?photoId=' + this.post.ID, payload, {
-                headers: { 'Authorization': this.token }
-            })
-                .then((response) => {
-                    console.log(response);
-                    this.newComment = ''; // Reset comment input
-                })
-                .catch((error) => {
-                    console.log(error);
-                });
+        async submitComment() {
+            const payload = { text: this.newComment };
+            try{
+                let response = await this.$axios.post(`users/${this.ownerID}/posts/${this.postID}/comments`, payload, { headers: { "Authorization": `${sessionStorage.token}` } });
+                this.newComment = '';
+                this.comments.push(response.data)
+            }catch(e){
+                this.errorMsg = e.toString();
+            }
         },
-        deleteComment(id) {
-            console.log(this.post)
-            this.$axios.delete('/comments?commentId=' + id, {
-                headers: { 'Authorization': this.token }
-            })
-                .then((response) => {
-                    console.log(response);
-                })
-                .catch((error) => {
-                    console.log(error);
-                });
+        async deleteComment(id) {
+            try{
+                let _ = await this.$axios.delete(`users/${this.ownerID}/posts/${this.postID}/comments/${id}`, { headers: { "Authorization": `${sessionStorage.token}` } });
+                this.comments = this.comments.filter(comment => comment.id != id);
+            }catch(e){
+                this.errorMsg = e.toString();
+            }
         }
-    }
+    },
+    mounted() {
+        if (this.ownerID == sessionStorage.userID) {
+            this.isOwner = true;
+        }
+        
+    },
 }
 </script>
 
 <template>
     <div v-if="post != null" class="post-container">
         <div class="username-container">
-            <RouterLink :to="{ path: 'user/' + post.user.id }" replace>
+            <RouterLink :to="{ path: '' + post.user.id }" replace>
                 {{ post.user.username }}
             </RouterLink>
-            <button class="" @click="deleteImage" v-if=isOwner>
-                <svg class="feather" :class="this.liked ? 'liked' : ''" >
+            <button class="" v-if="isOwner" @click="deleteImage" >
+                <svg class="feather" :class="this.isLiked ? 'liked' : ''" >
                     <use href="/feather-sprite-v4.29.0.svg#trash" />
                 </svg>
             </button>
@@ -106,39 +92,45 @@ export default {
         <div class="likes-container">
             <span>
                 <button class="like-btn" @click="toggleLike">
-                    <svg class="feather" :class="this.liked ? 'liked' : ''">
+                    <svg class="feather" :class="this.isLiked ? 'liked' : ''">
                         <use href="/feather-sprite-v4.29.0.svg#heart" />
                     </svg>
                 </button>
                 {{ this.likesCount + ((this.likesCount > 1) ? " likes" : " like") }}
             </span>
             <span class="date">
-                {{ new Date(post.UploadTime).toLocaleString('default', {
-                    month: 'long',
+                {{ new Date(post.timestamp).toLocaleString('default', {
                     year: 'numeric',
+                    month: 'long',
+                    day: '2-digit', 
                     hour: '2-digit',
-                    day: '2-digit',
-                    hour12: true // change to false if you want 24-hour format
+                    minute: '2-digit',
+                    hour12: false
                 }) }}
             </span>
         </div>
         <div class="comments-container">
             <ul>
-                <li class="comment" v-for="comment in this.comments" :key="comment.ID">
+                <li class="comment" v-for="comment in this.comments" :key="comment.id">
                     <div class="comment-top">
-
                         <div>
-                            <strong>{{ comment.UserName }}</strong> - <small>{{ new
-                                Date(comment.CreateTime).toLocaleString()
-                            }}</small>
+                            <strong>{{ comment.user.username }}</strong> - <small>{{ new
+                                Date(comment.timestamp).toLocaleString('default', {
+                                year: 'numeric',
+                                month: 'long',
+                                day: '2-digit', 
+                                hour: '2-digit',
+                                minute: '2-digit',
+                                hour12: false})
+                            }}</small> 
                         </div>
-                        <button class="" @click="() => deleteComment(comment.ID)" v-if="comment.UserID == this.token">
+                        <button class="" @click="() => deleteComment(comment.id)" v-if="isOwner">
                             <svg class="feather">
                                 <use href="/feather-sprite-v4.29.0.svg#trash" />
                             </svg>
                         </button>
                     </div>
-                    {{ comment.Text }}
+                    {{ comment.text }}
 
                 </li>
             </ul>

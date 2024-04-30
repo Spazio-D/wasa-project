@@ -8,7 +8,7 @@ export default {
 		return {
 			searchModalIsVisible: false,
 			isLoggedIn: sessionStorage.token ? true : false,
-			path: "",
+			path: "/user/" + sessionStorage.userID,
 			
 		}
 	},
@@ -27,6 +27,7 @@ export default {
 			this.$router.push('/');
 		},
 	},
+
 
 }
 </script>

@@ -16,8 +16,10 @@ export default {
 			return
 		}
 	},
-	components: { Post }
-}
+	components: { Post },
+    emits: ['login-success'],
+
+}   
 </script>
 
 <template>

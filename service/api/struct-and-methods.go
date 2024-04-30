@@ -45,7 +45,9 @@ type Post struct {
 	Image         string    `json:"image"`
 	LikesCount    int       `json:"likesCount"`
 	CommentsCount int       `json:"commentsCount"`
+	Comments	  []Comment `json:"comments"`
 	Timestamp     time.Time `json:"timestamp"`
+	LikeCheck     bool      `json:"likeCheck"`
 }
 
 // Convert the post from api struct to database struct
@@ -56,6 +58,7 @@ func (post *Post) DatabaseConversion() database.Post {
 		LikesCount:    post.LikesCount,
 		CommentsCount: post.CommentsCount,
 		Timestamp:     post.Timestamp,
+		LikeCheck:     post.LikeCheck,
 	}
 }
 
@@ -74,7 +77,14 @@ func (post *Post) ApiConversion(dbPost database.Post) error {
 	post.Image = image
 	post.LikesCount = dbPost.LikesCount
 	post.CommentsCount = dbPost.CommentsCount
+	post.Comments = make([]Comment, len(dbPost.Comments))
+	for i, dbComment := range dbPost.Comments {
+		var comment Comment
+		comment.ApiConversion(dbComment)
+		post.Comments[i] = comment
+	}
 	post.Timestamp = dbPost.Timestamp
+	post.LikeCheck = dbPost.LikeCheck
 
 	return nil
 }

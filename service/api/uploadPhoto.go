@@ -62,7 +62,8 @@ func (rt *_router) uploadPhoto(w http.ResponseWriter, r *http.Request, ps httpro
 	user.ApiConversion(dbUser)
 
 	var post = Post{
-		User: user,
+		User:      user,
+		LikeCheck: false,
 	}
 
 	dbPost := post.DatabaseConversion()

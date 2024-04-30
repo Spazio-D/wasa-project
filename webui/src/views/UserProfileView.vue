@@ -18,7 +18,6 @@ export default {
             isOwner: false,
             isBanned: false,
 
-            // Posts data
             posts: [],
             showPost: false,
             postViewData: {},
@@ -35,13 +34,11 @@ export default {
     },
     watch: {
         '$route.params.userID'() {
-            this.userID = parseInt(this.$route.params.userID);
-            if(!isNaN(this.userID)){
-                this.getProfile();
-                this.getPosts();
-            }
+            window.location.reload();
         }
+
     },
+    emits: ['login-success'],
     methods: {  
         handleFollowersToggle() {
 			this.followersModalIsVisible = !this.followersModalIsVisible;
@@ -129,22 +126,6 @@ export default {
                 }
             }
         },
-        openPost(post) {
-            this.showPost = true;
-            this.postViewData = post;
-        },
-        exitPost() {
-            this.showPost = false;
-            this.postViewData = {};
-        },
-        updateLike(data) {
-            this.posts.forEach(post => {
-                if (post.postID == data['postID']) {
-                    post.liked = data.liked;
-                    post.likesCount = data.liked ? post.likesCount + 1 : post.likesCount - 1;
-                }
-            });
-        },
         async banUser() {
             if(!this.isBanned){
                 try {
@@ -159,23 +140,17 @@ export default {
                     this.isBanned = false;
                 } catch (e) {
                     this.errorMsg = e.toString();
-                    console.log(e);
                 }
             }
         },
         async deletePost(postID) {
             try {
-                let _ = await this.$axios.delete(`profiles/${localStorage.userID}/posts/${postID}`, { headers: { 'Authorization': `${localStorage.token}` } });
-                this.posts = this.posts.filter(post => post.postID != postID);
+                let _ = await this.$axios.delete(`users/${sessionStorage.token}/posts/${postID}`, { headers: { 'Authorization': `${sessionStorage.token}` } });
+                this.posts = this.posts.filter(post => post.id != postID);
                 this.postsCount--;
-                this.exitPost();
             } catch (e) {
                 this.errorMsg = e.toString();
             }
-        },
-        updateProfile() {   
-            this.getProfile();
-            localStorage.propic64 = this.proPic64;
         },
     },
     beforeMount() {
@@ -246,8 +221,8 @@ export default {
 
 
 
-    <div class="feed" v-for="post in this.posts" :key="post.ID">
-        <Post :post="post" :identifier="this.identifier" @delete="() => deleteImage(post.ID)" />
+    <div class="feed" v-for="post in posts" :key="post.ID">
+        <Post :post="post" @delete-post="deletePost"/>
     </div>
 
 

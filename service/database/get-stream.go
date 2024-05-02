@@ -1,10 +1,5 @@
 package database
 
-import (
-	"database/sql"
-	"errors"
-)
-
 var get_user_followed = `SELECT id, username FROM User WHERE id IN (SELECT followed_id FROM Follow WHERE follower_id = ?)`
 var query_get_stream = `SELECT User.id, User.username, Post.id, Post.timestamp FROM (` + get_user_followed + `) AS User INNER JOIN Post ON User.id = Post.user_id ORDER BY Post.timestamp DESC`
 
@@ -33,17 +28,39 @@ func (db *appdbimpl) GetStream(userID int) ([]Post, error) {
 			return nil, err
 		}
 
-		var likeCheck int
-		err = db.c.QueryRow(query_like_check, post.ID, post.User.ID, userID).Scan(&likeCheck)
-		if errors.Is(err, sql.ErrNoRows) {
-			post.LikeCheck = false
-		} else if err != nil {
+		if err = db.c.QueryRow(query_like_check, post.ID, user.ID, userID).Scan(&post.LikeCheck); err != nil {
 			return nil, err
-		} else {
-			post.LikeCheck = true
+		}
+
+		rows2, err := db.c.Query(query_get_comments, post.ID, user.ID)
+		if err != nil {
+			return nil, err
+		}
+
+		var comments []Comment
+		for rows2.Next() {
+			var comment Comment
+			err = rows2.Scan(&comment.ID, &comment.User.ID, &comment.PostID, &comment.OwnerID, &comment.Text, &comment.Timestamp)
+			if err != nil {
+				return nil, err
+			}
+			var user User
+			user, err = db.GetUserByID(comment.User.ID)
+			if err != nil {
+				return nil, err
+			}
+			comment.User = user
+			comments = append(comments, comment)
+		}
+
+		defer func() { err = rows2.Close() }()
+
+		if rows2.Err() != nil {
+			return posts, rows.Err()
 		}
 
 		post.User = user
+		post.Comments = comments
 		posts = append(posts, post)
 
 	}

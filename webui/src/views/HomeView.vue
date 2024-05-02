@@ -5,16 +5,27 @@ import Post from '../components/Post.vue';
 export default {
 	data: function () {
 		return {
-			errorMsg: null,
-			feed: null,
-			token : sessionStorage.token,
+			errorMsg: "",
+			feed: [],
 		};
 	},
+    methods:{
+        async getFeed(){
+            try{
+                let response = await this.$axios.get(`/users/${sessionStorage.userID}/stream`, { headers: { 'Authorization': sessionStorage.token } })
+				this.feed = response.data;
+			}
+			catch (e) {
+				this.errormsg = e.toString();
+			}
+        },
+    },
 	mounted() {
 		if (!sessionStorage.token) {
 			this.$router.push('/');
 			return
 		}
+        this.getFeed();
 	},
 	components: { Post },
     emits: ['login-success'],
@@ -24,10 +35,10 @@ export default {
 
 <template>
     
-    <div v-if="feed != null" style="margin-top: 30px;">
+    <div v-if="feed.length !== 0" style="margin-top: 30px;">
 
         <div class="feed" v-for="post in feed" :key="post.ID">
-            <Post :post="post" :token="this.token"/>
+            <Post :post="post" />
         </div>
 
     </div>

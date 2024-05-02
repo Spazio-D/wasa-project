@@ -34,7 +34,9 @@ export default {
     },
     watch: {
         '$route.params.userID'() {
-            window.location.reload();
+            if(!isNaN(this.$route.params.userID)){
+                window.location.reload();
+            }
         }
 
     },

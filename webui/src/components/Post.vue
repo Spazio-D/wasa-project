@@ -17,7 +17,8 @@ export default {
             timestamp: this.post.timestamp,
             isOwner: false,
             errorMsg: "",
-            newComment: '',
+            newComment: "",
+            userID: sessionStorage.userID,
   
         };
     },
@@ -66,10 +67,10 @@ export default {
         }
     },
     mounted() {
+        this.userID = sessionStorage.userID;
         if (this.ownerID == sessionStorage.userID) {
             this.isOwner = true;
-        }
-        
+        } 
     },
 }
 </script>
@@ -77,7 +78,7 @@ export default {
 <template>
     <div v-if="post != null" class="post-container">
         <div class="username-container">
-            <RouterLink :to="{ path: '' + post.user.id }" replace>
+            <RouterLink :to="{ path: '/user/' + post.user.id }" replace force>
                 {{ post.user.username }}
             </RouterLink>
             <button class="" v-if="isOwner" @click="deleteImage" >
@@ -124,7 +125,7 @@ export default {
                                 hour12: false})
                             }}</small> 
                         </div>
-                        <button class="" @click="() => deleteComment(comment.id)" v-if="isOwner">
+                        <button class="" @click="() => deleteComment(comment.id)" v-if="isOwner || comment.user.id == userID">
                             <svg class="feather">
                                 <use href="/feather-sprite-v4.29.0.svg#trash" />
                             </svg>

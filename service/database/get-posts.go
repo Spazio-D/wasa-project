@@ -58,11 +58,16 @@ func (db *appdbimpl) GetPosts(userID int, owner User, offset int, limit int) ([]
 			comments = append(comments, comment)
 		}
 
+		defer func() { err = rows2.Close() }()
+
+		if rows2.Err() != nil {
+			return posts, rows.Err()
+		}
+
 		post.ImageUrl = post.GetPath()
 		post.Comments = comments
 		posts = append(posts, post)
 
-		defer func() { err = rows2.Close() }()
 	}
 
 	defer func() { err = rows.Close() }()

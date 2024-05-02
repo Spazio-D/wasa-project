@@ -34,14 +34,17 @@ export default {
     },
     watch: {
         '$route.params.userID'() {
-            if(!isNaN(this.$route.params.userID)){
-                window.location.reload();
+            this.userID = parseInt(this.$route.params.userID);
+            if(!isNaN(this.userID)){
+                this.posts = [];
+                this.getProfile();
+                this.getPosts();
             }
         }
 
     },
     emits: ['login-success'],
-    methods: {  
+    methods: { 
         handleFollowersToggle() {
 			this.followersModalIsVisible = !this.followersModalIsVisible;
 		},
@@ -97,9 +100,12 @@ export default {
             }
             try{
                 let _ = await this.$axios.put(`/users/${this.userID}/username`, { username: this.newUsername }, { headers: { 'Authorization': `${sessionStorage.token}` } })
-                this.username = this.newUsername;
-                this.errorMsg = "";
                 this.handleUpdateNameToggle();
+                this.errorMsg = "";
+                this.posts = [];
+                this.getProfile();
+                this.getPosts();
+
             } catch (e) {
                 if(e.response.data == "Username already exist\n"){
                     this.errorMsg = "This username is already taken. Please try another one.";
@@ -132,7 +138,9 @@ export default {
             if(!this.isBanned){
                 try {
                     let _ = await this.$axios.put(`/users/${sessionStorage.userID}/banned/${this.userID}`, {}, { headers: { 'Authorization': `${sessionStorage.token}` } });
-                    this.$router.push(`${sessionStorage.userID}`);
+                    this.isBanned = true;
+                    this.getProfile();
+                    this.posts = [];
                 } catch (e) {
                     this.errorMsg = e.toString();
                 }
@@ -140,6 +148,8 @@ export default {
                 try {
                     let _ = await this.$axios.delete(`/users/${sessionStorage.userID}/banned/${this.userID}`, { headers: { 'Authorization': `${sessionStorage.token}` } });
                     this.isBanned = false;
+                    this.getProfile();
+                    this.getPosts();
                 } catch (e) {
                     this.errorMsg = e.toString();
                 }
@@ -222,10 +232,13 @@ export default {
     </div>
 
 
-
+    <div class="empty-msg" v-if="posts.length === 0 && isOwner">
+        <p>There's nothing here, just upload some photo :D</p>
+    </div>
     <div class="feed" v-for="post in posts" :key="post.ID">
         <Post :post="post" @delete-post="deletePost"/>
     </div>
+    
 
 
 </template>

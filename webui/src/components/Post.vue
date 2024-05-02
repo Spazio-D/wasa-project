@@ -19,6 +19,7 @@ export default {
             errorMsg: "",
             newComment: "",
             userID: sessionStorage.userID,
+            showComments: false,
   
         };
     },
@@ -46,6 +47,9 @@ export default {
                     this.errorMsg = e.toString();
                 }
             }
+        },
+        toggleComment() {
+            this.showComments = !this.showComments;
         },
         async submitComment() {
             const payload = { text: this.newComment };
@@ -78,7 +82,7 @@ export default {
 <template>
     <div v-if="post != null" class="post-container">
         <div class="username-container">
-            <RouterLink :to="{ path: '/user/' + post.user.id }" replace force>
+            <RouterLink :to="{ path: '/user/' + post.user.id }" class="custom-link" replace force>
                 {{ post.user.username }}
             </RouterLink>
             <button class="" v-if="isOwner" @click="deleteImage" >
@@ -99,6 +103,14 @@ export default {
                 </button>
                 {{ this.likesCount + ((this.likesCount > 1) ? " likes" : " like") }}
             </span>
+            <span>
+                <button class="comment-btn" @click="toggleComment">
+                    <svg class="feather" :class="this.showComments ? 'commented' : ''">
+                        <use href="/feather-sprite-v4.29.0.svg#cloud" />
+                    </svg>
+                </button>
+                {{ this.commentsCount + ((this.commentsCount > 1) ? " comments" : " comment") }}
+            </span>
             <span class="date">
                 {{ new Date(post.timestamp).toLocaleString('default', {
                     year: 'numeric',
@@ -111,11 +123,16 @@ export default {
             </span>
         </div>
         <div class="comments-container">
-            <ul>
+            <ul v-if="this.showComments">
                 <li class="comment" v-for="comment in this.comments" :key="comment.id">
                     <div class="comment-top">
                         <div>
-                            <strong>{{ comment.user.username }}</strong> - <small>{{ new
+                            <strong>
+                                <RouterLink :to="{ path: '/user/' + comment.user.id }" class="custom-link" replace force>
+                                    {{ comment.user.username }}
+                                </RouterLink>
+                            </strong> - 
+                            <small>{{ new
                                 Date(comment.timestamp).toLocaleString('default', {
                                 year: 'numeric',
                                 month: 'long',
@@ -134,13 +151,18 @@ export default {
                     {{ comment.text }}
 
                 </li>
+                <form class="comment-input-container" @submit.prevent="submitComment">
+                    <input type="text" v-model="newComment" placeholder="Comment" />
+                    <button type="submit">Post</button>
+                </form>
             </ul>
-            <form class="comment-input-container" @submit.prevent="submitComment">
-                <input type="text" v-model="newComment" placeholder="Comment" />
-                <button type="submit">Post</button>
-            </form>
         </div>
     </div>
 </template>
 
-<style></style>
+<style scoped>
+.custom-link {
+  color: inherit; /* This will make the link have the same color as the surrounding text */
+  text-decoration: none; /* This will remove the underline */
+}
+</style>

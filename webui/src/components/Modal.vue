@@ -83,7 +83,7 @@ export default {
               </div>
               <div class="search-results">
                 <div v-for="user in filteredUsers" :key="user.id" @click="closeModal">
-                  <RouterLink :to="'/user/' + user.id" replace force>
+                  <RouterLink :to="'/user/' + user.id" class="custom-link" replace force>
                     <div class="user">
                       <p>{{ user.username }}</p>
                     </div>
@@ -99,6 +99,10 @@ export default {
 </template>
 
 <style>
+.custom-link {
+  color: inherit; /* This will make the link have the same color as the surrounding text */
+  text-decoration: none; /* This will remove the underline */
+}
 .modal-mask {
   position: fixed;
   z-index: 9998;
@@ -117,9 +121,8 @@ export default {
 }
 
 .modal-container {
-  width: 300px;
+  width: 350px;
   margin: 0px auto;
-  /* padding: 20px 15px 0 15px; */
   background-color: #fff;
   border-radius: 2px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.33);
@@ -127,11 +130,12 @@ export default {
 }
 
 .modal-header {
+  height: 70px;
   padding: 20px 15px 10px 15px;
 }
 .modal-header h3 {
   margin-top: 0;
-  font-size: 19px;
+  font-size: 25px;
   color: #42b983;
 }
 
@@ -149,27 +153,21 @@ export default {
   height: 20px;
 }
 
-.modal-body {
-  /* margin: 20px 0; */
-  /* border: 1px solid #eee; */
-}
 
 .search-input {
   padding: 0 15px;
-  /* border-bottom:
-   1px solid #eee; */
-  
 }
 
 .search-input input {
+  height: 30px;
   width: 100%;
   outline: none;
-  /* border: none */
   border-radius: 3px;
   border:1px solid rgb(179, 179, 179)
 }
 
 .search-results {
+  font-size: 15px;
   padding: 10px 15px;
   border-bottom: 1px solid #eee;
   cursor: pointer;
@@ -193,7 +191,6 @@ export default {
   outline: none;
   border-radius: 3px;
   border:1px solid rgb(179, 179, 179)
-  /* border: none; */
 }
 
 .username-form button {

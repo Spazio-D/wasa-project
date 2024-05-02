@@ -131,7 +131,7 @@
 }
 
 .like-btn {
-    color:red;
+    color:black;
     background: none;
     border: none;
     padding: 5px;
@@ -149,6 +149,27 @@
     fill: red;
     /* Color when liked */
 }
+
+.comment-btn {
+    color:black;
+    background: none;
+    border: none;
+    padding: 5px;
+    line-height: 12px;
+    font-size: 15px;
+}
+.comment-btn svg {
+    width: 20px;
+    height: 20px;
+}
+.comment-btn.commented {
+    fill: black;
+}
+.comment-btn .feather.commented {
+    fill: black;
+    /* Color when liked */
+}
+
 .comments-container {
     margin-top: 5px;
     /* border-top: 1px solid rgb(205, 205, 205); */

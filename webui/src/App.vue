@@ -114,7 +114,7 @@ export default {
 a{
 	cursor: pointer
 }
-span, header h1, h2, h3, h4{
+span, header h1, h2, h3, h4, p{
 	user-select: none;
 }
 </style>

@@ -16,6 +16,9 @@ func (rt *_router) Handler() http.Handler {
 	// CREATE A POST
 	rt.router.POST("/users/:user_id/posts", rt.wrap(rt.uploadPhoto, true))
 
+	// GET USER POSTS
+	rt.router.GET("/users/:user_id/posts", rt.wrap(rt.getPosts, true))
+
 	// FOLLOW A USER
 	rt.router.PUT("/users/:user_id/follows/:followed_id", rt.wrap(rt.followUser, true))
 
@@ -48,9 +51,6 @@ func (rt *_router) Handler() http.Handler {
 
 	// DELETE A POST
 	rt.router.DELETE("/users/:user_id/posts/:post_id", rt.wrap(rt.deletePhoto, true))
-
-	// GET USER POSTS
-	rt.router.GET("/users/:user_id/posts", rt.wrap(rt.getPosts, true))
 
 	// SEARCH USERS
 	rt.router.GET("/users", rt.wrap(rt.searchUsers, true))

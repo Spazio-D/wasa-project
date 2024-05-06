@@ -535,7 +535,7 @@ paths:
 
     get:
       tags: ["User"]
-      operationId: findUsers
+      operationId: searchUsers
       summary: Get the list of profiles
       description: |-
         Get the list of Users that match with the username specified in the query.

@@ -16,7 +16,7 @@ type Post struct {
 	ImageUrl      string    `json:"imageUrl"`
 	LikesCount    int       `json:"likesCount"`
 	CommentsCount int       `json:"commentsCount"`
-	Comments	  []Comment `json:"comments"`
+	Comments      []Comment `json:"comments"`
 	Timestamp     time.Time `json:"timestamp"`
 	LikeCheck     bool      `json:"likeCheck"`
 }

@@ -19,12 +19,14 @@ export default {
             isBanned: false,
 
             posts: [],
+            postToDelete: null,
             showPost: false,
             postViewData: {},
             
             followingModalIsVisible: false,
 			followersModalIsVisible: false,
             updateNameModalIsVisible: false,
+            deletePostModalIsVisible: false,
 
         }
     },
@@ -56,6 +58,18 @@ export default {
             this.newUsername = "";
             this.errorMsg = "";
 		},
+        handleDeletePostToggle(id) {
+            this.deletePostModalIsVisible = !this.deletePostModalIsVisible;
+            this.postToDelete = id;
+        },
+        deleteConfirmed() {
+        this.deletePost(this.postToDelete);
+        this.deletePostModalIsVisible = false;
+        },
+        cancelDelete() {
+            this.postToDelete = null;
+            this.deletePostModalIsVisible = false;
+        },
         async getProfile() {
             try {
                 let response = await this.$axios.get(`users/${this.userID}`, { headers: { 'Authorization': `${sessionStorage.token}` } })
@@ -158,8 +172,9 @@ export default {
         async deletePost(postID) {
             try {
                 let _ = await this.$axios.delete(`users/${sessionStorage.token}/posts/${postID}`, { headers: { 'Authorization': `${sessionStorage.token}` } });
-                this.posts = this.posts.filter(post => post.id != postID);
                 this.postsCount--;
+                this.posts = this.posts.filter(post => post.id != postID);
+                this.postToDelete = null;
             } catch (e) {
                 this.errorMsg = e.toString();
             }
@@ -210,6 +225,15 @@ export default {
                 </form>
             </template>
         </Modal>
+        <div class="modal" v-if="deletePostModalIsVisible">
+            <div class="modal-content">
+                <h5>Are you sure you want to delete this post?</h5>
+                <div class="modal-buttons">
+                    <button @click="deleteConfirmed">Yes</button>
+                    <button @click="cancelDelete">Nope</button>
+                </div>
+            </div>
+        </div>
         <div class="top">
             <h1>{{ this.username }}
                 <button v-if="isOwner" @click="handleUpdateNameToggle">
@@ -235,10 +259,57 @@ export default {
     <div class="empty-msg" v-if="posts.length === 0 && isOwner">
         <p>There's nothing here, just upload some photo :D</p>
     </div>
-    <div class="feed" v-for="post in posts" :key="post.ID">
-        <Post :post="post" @delete-post="deletePost"/>
+    <div class="feed" v-for="post in posts" :key="post.id">
+        <Post :post="post" @delete-post="handleDeletePostToggle"/>
     </div>
-    
-
 
 </template>
+
+<style>
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    max-width: 400px; /* Imposta la larghezza massima */
+    width: 100%; /* Larghezza del modale */
+    text-align: center; /* Centra il contenuto */
+}
+
+.modal-buttons {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px; /* Aggiunge spazio tra il testo e i pulsanti */
+}
+
+.modal-buttons button {
+    margin: 0 10px;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.modal-buttons button:nth-child(1) {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.modal-buttons button:nth-child(2) {
+    background-color: #f44336;
+    color: white;
+}
+
+</style>

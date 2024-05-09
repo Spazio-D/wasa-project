@@ -25,7 +25,6 @@ export default {
     },
     methods: {
         deleteImage() {
-            window.confirm("Are you sure you want to delete this image?");
             this.$emit('delete-post', this.postID);
         },
         async toggleLike() {
@@ -57,6 +56,7 @@ export default {
                 let response = await this.$axios.post(`users/${this.ownerID}/posts/${this.postID}/comments`, payload, { headers: { "Authorization": `${sessionStorage.token}` } });
                 this.newComment = '';
                 this.comments.push(response.data)
+                this.commentsCount++;
             }catch(e){
                 this.errorMsg = e.toString();
             }
@@ -65,6 +65,7 @@ export default {
             try{
                 let _ = await this.$axios.delete(`users/${this.ownerID}/posts/${this.postID}/comments/${id}`, { headers: { "Authorization": `${sessionStorage.token}` } });
                 this.comments = this.comments.filter(comment => comment.id != id);
+                this.commentsCount--;
             }catch(e){
                 this.errorMsg = e.toString();
             }
@@ -86,7 +87,7 @@ export default {
                 {{ post.user.username }}
             </RouterLink>
             <button class="" v-if="isOwner" @click="deleteImage" >
-                <svg class="feather" :class="this.isLiked ? 'liked' : ''" >
+                <svg class="feather" >
                     <use href="/feather-sprite-v4.29.0.svg#trash" />
                 </svg>
             </button>

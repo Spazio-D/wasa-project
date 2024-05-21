@@ -433,23 +433,6 @@ paths:
         "403": { $ref: "#/components/responses/Forbidden" }
         "500": { $ref: "#/components/responses/InternalServerError" }
         "503": { $ref: "#/components/responses/ServiceUnavailable" }
-
-    # get:
-    #   tags: ["Post"]
-    #   operationId: getComments
-    #   summary: Get a subset or all comments of a post
-    #   description: Get the comments of the post
-    #   responses:
-    #     "200":
-    #       description: Get comments successful
-    #       content:
-    #         application/json:
-    #           schema: { $ref: "#/components/schemas/CommentsList" }
-    #     "400": { $ref: "#/components/responses/BadRequest" }
-    #     "401": { $ref: "#/components/responses/Unauthorized" }
-    #     "403": { $ref: "#/components/responses/Forbidden" }
-    #     "500": { $ref: "#/components/responses/InternalServerError" }
-    #     "503": { $ref: "#/components/responses/ServiceUnavailable" }
     
   #UNCOMMENT POST
   /users/{user_id}/posts/{post_id}/comments/{comment_id}:
@@ -712,14 +695,6 @@ components:
           minLength: 1
           maxLength: 999
         timestamp: { $ref: "#/components/schemas/TimeStamp" }
-    
-    CommentsList:
-      title: CommentList
-      description: The list of comments of a post
-      type: array
-      items: { $ref: "#/components/schemas/Comment" }
-      minItems: 0
-      maxItems: 99999
 
     #AUTHORIZATION
     AuthUser:
